@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <script src="config.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #89CFF0, #1E90FF);
+      height: 100vh;
+      display: flex;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      color: #fff;
+      animation: slideIn 0.8s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 20px 0;
+      cursor: pointer;
+      transition: 0.3s;
+      user-select: none;
+    }
+
+    .sidebar ul li:hover {
+      transform: translateX(5px);
+      font-weight: bold;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+      color: white;
+      animation: fadeIn 1s ease 0.5s both;
+    }
+
+    .main h1 {
+      margin-bottom: 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: rgba(255,255,255,0.2);
+      backdrop-filter: blur(6px);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      transition: 0.4s;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      background-color: rgba(255,255,255,0.3);
+    }
+
+    .logout-btn {
+      margin-top: 40px;
+      padding: 12px 24px;
+      background-color: #0057D9;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #003f9e;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu Admin</h2>
+    <ul>
+      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+      <li onclick="window.location.href='laporan.html'">Laporan</li>
+      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li>
+      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    </ul>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main">
+    <h1>Selamat Datang di Dashboard Admin</h1>
+    <div class="cards">
+      <div class="card" onclick="window.location.href='buku.html'">
+        <h3>Manajemen Buku</h3>
+        <p>Kelola data buku yang tersedia</p>
+      </div>
+      <div class="card" onclick="window.location.href='admin.html#pengguna'">
+        <h3>Daftar Pengguna</h3>
+        <p>Lihat dan atur pengguna</p>
+      </div>
+      <div class="card">
+        <h3>Laporan</h3>
+        <p>Lihat laporan peminjaman</p>
+      </div>
+      <div class="card">
+        <h3>Pengaturan</h3>
+        <p>Atur sistem dan preferensi</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("Anda telah logout.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

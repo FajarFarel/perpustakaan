@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengaturan</title>
+  <script src="config.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body {
+      background: linear-gradient(to bottom right, #89CFF0, #1E90FF);
+      height: 100vh;
+      display: flex;
+      animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .sidebar {
+      width: 220px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      color: #fff;
+      animation: slideIn 0.8s ease-out;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+    .sidebar h2 { margin-bottom: 30px; font-size: 22px; }
+    .sidebar ul { list-style: none; }
+    .sidebar ul li {
+      margin: 20px 0;
+      cursor: pointer;
+      transition: 0.3s;
+      user-select: none;
+    }
+    .sidebar ul li:hover {
+      transform: translateX(5px);
+      font-weight: bold;
+    }
+    .main {
+      flex: 1;
+      padding: 40px;
+      color: white;
+      animation: fadeIn 1s ease 0.5s both;
+    }
+    .main h1 {
+      margin-bottom: 30px;
+    }
+    .section {
+      background-color: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .logout-btn {
+      margin-top: 40px;
+      padding: 12px 24px;
+      background-color: #0057D9;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .logout-btn:hover {
+      background-color: #003f9e;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu Admin</h2>
+    <ul>
+      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+      <li onclick="window.location.href='laporan.html'">Laporan</li>
+      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li>
+      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    </ul>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main">
+    <h1>Pengaturan</h1>
+    <div class="section">
+      <h2>Pengaturan Akun</h2>
+      <p>Ganti email, nama admin, atau ubah kata sandi.</p>
+    </div>
+    <div class="section">
+      <h2>Preferensi Aplikasi</h2>
+      <p>Atur tema tampilan, bahasa, dan notifikasi.</p>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("Anda telah logout.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

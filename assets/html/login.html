@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <script src="config.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #89CFF0, #1E90FF);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+      overflow: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .container { 
+      width: 100%;
+      max-width: 400px;
+      height: 90vh;
+      padding: 30px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      animation: slideUp 0.8s ease;
+    }
+    @keyframes slideUp {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .container img {
+      width: 120px;
+      margin: 20px auto;
+      animation: popIn 1.2s ease;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      line-height: 1.4;
+      animation: fadeIn 1.5s ease;
+    }
+    .card {
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 30px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+      animation: zoomIn 1s ease;
+    }
+    @keyframes zoomIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px;
+      transition: transform 0.2s ease;
+    }
+    input:focus {
+      transform: scale(1.03);
+    }
+    .password-container {
+      position: relative;
+    }
+    .password-container input {
+      padding-right: 40px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 23px;
+      cursor: pointer;
+      color: #444;
+    }
+    button {
+      background-color: #0057D9;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      width: 100%;
+      margin-top: 16px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background-color: #003f9e;
+      transform: scale(1.02);
+    }
+  </style>
+  <script>
+    function togglePassword() {
+      const input = document.getElementById("password");
+      const icon = document.getElementById("toggleIcon");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "🙈";
+      } else {
+        input.type = "password";
+        icon.textContent = "👁️";
+      }
+    }
+
+    function login() {
+    let emailInput = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    // Pastikan email lengkap dengan @gmail.com
+    if (!emailInput.endsWith("@gmail.com")) {
+      emailInput += "@gmail.com";
+    }
+
+    // Validasi password hanya angka dan maksimal 6 digit
+    if (!/^[0-9]{1,6}$/.test(password)) {
+      alert("Password hanya boleh berisi angka dan maksimal 6 digit!");
+      return;
+    }
+
+    // Kirim request ke backend
+    fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email: emailInput, password: password })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.user) {
+        // Jika berhasil login, redirect ke halaman admin
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Login gagal: " + data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat menghubungi server.");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const pw = document.getElementById("password");
+    pw.addEventListener("input", () => {
+      pw.value = pw.value.replace(/[^0-9]/g, "");
+      if (pw.value.length > 6) {
+        pw.value = pw.value.slice(0, 6);
+      }
+    });
+  });
+  function loadAnggota() {
+    fetch(`${API_URL}/users`)
+      .then(res => res.json())
+      .then(data => {
+        const tableBody = document.getElementById("anggota-body");
+        tableBody.innerHTML = "";
+
+        data.forEach((mhs, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${mhs.nama}</td>
+            <td>${mhs.nim}</td>
+            <td>${mhs.prodi}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error("Gagal mengambil data anggota:", err);
+      });
+  }
+
+  // Panggil saat halaman selesai dimuat
+  document.addEventListener("DOMContentLoaded", loadAnggota);
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Selamat Datang Admin di<br>Perpustakaan Fakultas Kedokteran</div>
+    <img src="logofk.png" alt="Logo Fakultas" />
+    <div class="card">
+      <input type="text" id="email" placeholder="Email (tanpa @gmail.com)" />
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Password" inputmode="numeric" maxlength="6" />
+        <span id="toggleIcon" class="toggle-password" onclick="togglePassword()">👁️</span>
+      </div>
+      <button onclick="login()">Login</button>
+    </div>
+  </div>
+</body>
+</html>

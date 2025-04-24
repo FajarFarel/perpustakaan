@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Buku</title>
+  <script src="config.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #89CFF0, #1E90FF);
+      height: 100vh;
+      display: flex;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      color: #fff;
+      animation: slideIn 0.8s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 20px 0;
+      cursor: pointer;
+      transition: 0.3s;
+      user-select: none;
+    }
+
+    .sidebar ul li:hover {
+      transform: translateX(5px);
+      font-weight: bold;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+      color: white;
+      animation: fadeIn 1s ease 0.5s both;
+    }
+
+    .main h1 {
+      margin-bottom: 30px;
+    }
+
+    .logout-btn {
+      margin-top: 40px;
+      padding: 12px 24px;
+      background-color: #0057D9;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #003f9e;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      color: white;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid white;
+      text-align: left;
+    }
+
+    thead {
+      background-color: rgba(0, 87, 217, 0.8);
+    }
+
+    .action-btn {
+      padding: 6px 10px;
+      margin: 3px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 12px;
+    }
+
+    .btn-edit {
+      background-color: #f0ad4e;
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: #d9534f;
+      color: white;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    #searchInput {
+      padding: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255,255,255,0.8);
+    }
+
+    img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu Admin</h2>
+    <ul>
+      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+      <li onclick="window.location.href='laporan.html'">Laporan</li>
+      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li>
+      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    </ul>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main">
+    <h1>Manajemen Buku</h1>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari buku...">
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Judul</th>
+          <th>Penulis</th>
+          <th>No Buku</th>
+          <th>Jumlah</th>
+          <th>Deskripsi</th>
+          <th>Gambar</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="bookBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 🔧 Modal Edit Buku -->
+  <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+    <div style="background:white; padding:20px; border-radius:10px; max-width:500px; width:90%;">
+      <h2>Edit Buku</h2>
+      <form id="editForm">
+        <input type="hidden" id="editId">
+        <label>Judul</label><br>
+        <input type="text" id="editJudul" required><br>
+        <label>Penulis</label><br>
+        <input type="text" id="editPenulis" required><br>
+        <label>No Buku</label><br>
+        <input type="text" id="editNoBuku" required><br>
+        <label>Jumlah</label><br>
+        <input type="number" id="editJumlah" required><br>
+        <label>Deskripsi</label><br>
+        <textarea id="editDeskripsi" required></textarea><br><br>
+        <button type="submit">Simpan</button>
+        <button type="button" onclick="tutupModal()">Batal</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("Anda telah logout.");
+      window.location.href = "login.html";
+    }
+
+    function fetchBooks() {
+      fetch(`${API_URL}/data_buku`)
+        .then(res => res.json())
+        .then(data => {
+          const books = data.data_buku;
+          const tbody = document.getElementById("bookBody");
+          tbody.innerHTML = "";
+          books.forEach(book => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${book.id}</td>
+              <td>${book.judul}</td>
+              <td>${book.penulis}</td>
+              <td>${book.no_buku}</td>
+              <td>${book.jumlah}</td>
+              <td>${book.deskripsi}</td>
+              <td>${book.foto ? `<img src="data:image/png;base64,${book.foto}" />` : '-'}</td>
+              <td>
+                <button class="action-btn btn-edit" onclick='editBuku(${JSON.stringify(book)})'>Edit</button>
+                <button class="action-btn btn-delete" onclick="hapusBuku(${book.id})">Hapus</button>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch(err => console.error("Gagal ambil data:", err));
+    }
+
+    function hapusBuku(id) {
+      if (confirm("Yakin ingin menghapus buku ini?")) {
+        fetch(`${API_URL}/data_buku/${id}`, {
+          method: "DELETE"
+        }).then(res => {
+          if (res.ok) {
+            alert("Buku berhasil dihapus");
+            fetchBooks();
+          } else {
+            alert("Gagal menghapus buku");
+          }
+        });
+      }
+    }
+
+    function filterTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#bookBody tr");
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+      });
+    }
+
+    // 🧠 Edit buku handler
+    function editBuku(buku) {
+      document.getElementById("editId").value = buku.id;
+      document.getElementById("editJudul").value = buku.judul;
+      document.getElementById("editPenulis").value = buku.penulis;
+      document.getElementById("editNoBuku").value = buku.no_buku;
+      document.getElementById("editJumlah").value = buku.jumlah;
+      document.getElementById("editDeskripsi").value = buku.deskripsi;
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function tutupModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
+
+    document.getElementById("editForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const id = document.getElementById("editId").value;
+      const data = {
+        judul: document.getElementById("editJudul").value,
+        penulis: document.getElementById("editPenulis").value,
+        no_buku: document.getElementById("editNoBuku").value,
+        jumlah: document.getElementById("editJumlah").value,
+        deskripsi: document.getElementById("editDeskripsi").value,
+      };
+
+      fetch(`${API_URL}/data_buku/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      }).then(res => {
+        if (res.ok) {
+          alert("Buku berhasil diperbarui");
+          tutupModal();
+          fetchBooks();
+        } else {
+          alert("Gagal memperbarui buku");
+        }
+      });
+    });
+
+    fetchBooks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Pengguna</title>
+  <script src="config.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #89CFF0, #1E90FF);
+      height: 100vh;
+      display: flex;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      color: #fff;
+      animation: slideIn 0.8s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 20px 0;
+      cursor: pointer;
+      transition: 0.3s;
+      user-select: none;
+    }
+
+    .sidebar ul li:hover {
+      transform: translateX(5px);
+      font-weight: bold;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+      color: white;
+      animation: fadeIn 1s ease 0.5s both;
+    }
+
+    .main h1 {
+      margin-bottom: 30px;
+    }
+
+    .logout-btn {
+      margin-top: 40px;
+      padding: 12px 24px;
+      background-color: #0057D9;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #003f9e;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      color: white;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid white;
+      text-align: center;
+    }
+
+    thead {
+      background-color: rgba(0, 87, 217, 0.8);
+    }
+
+    .action-btn {
+      padding: 6px 10px;
+      margin: 3px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 12px;
+    }
+
+    .action-btn.aktif {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .action-btn.blokir {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .action-btn.suspend {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu Admin</h2>
+    <ul>
+      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+      <li onclick="window.location.href='laporan.html'">Laporan</li>
+      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li>
+      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    </ul>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main">
+    <h1>Selamat Datang, Admin!</h1>
+    <h2 style="margin-top: 50px;">Daftar Pengguna</h2>
+    <!-- Tambahkan ini di atas tabel -->
+<input type="text" id="search-input" placeholder="Cari pengguna..." 
+style="padding: 10px; margin-bottom: 20px; width: 100%; border-radius: 8px; border: none; font-size: 16px;" 
+oninput="filterPengguna()">
+<table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nama</th>
+          <th>NPM</th>
+          <th>NoTelp</th>
+          <th>Email</th>
+          <th>Alamat</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="user-table-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let semuaPengguna = [];
+  
+    function logout() {
+      alert("Anda telah logout.");
+      window.location.href = "login.html";
+    }
+  
+    // Ambil data pengguna dari backend
+    fetch(`${API_URL}/users`)
+      .then(res => res.json())
+      .then(data => {
+        semuaPengguna = data || []; // fallback kalau undefined
+        tampilkanPengguna(semuaPengguna);
+      })
+      .catch(err => {
+        console.error("Gagal mengambil data:", err);
+      });
+  
+    function tampilkanPengguna(users) {
+      const tbody = document.getElementById("user-table-body");
+      tbody.innerHTML = "";
+  
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7">Tidak ada pengguna ditemukan</td></tr>`;
+        return;
+      }
+  
+      users.forEach(user => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${user.id}</td>
+          <td>${user.nama}</td>
+          <td>${user.npm}</td>
+          <td>${user.noTelp}</td>
+          <td>${user.email}</td>
+          <td>${user.alamat}</td>
+          <td>${user.status}</td>
+          <td>
+            <button class="action-btn aktif" onclick="ubahStatus(${user.id}, 'aktif')">Aktifkan</button>
+            <button class="action-btn blokir" onclick="ubahStatus(${user.id}, 'blokir')">Blokir</button>
+            <button class="action-btn suspend" onclick="suspendUser(${user.id}, 1)">1 Hari</button>
+            <button class="action-btn suspend" onclick="suspendUser(${user.id}, 3)">3 Hari</button>
+            <button class="action-btn suspend" onclick="suspendUser(${user.id}, 7)">7 Hari</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  
+    function ubahStatus(id, statusBaru) {
+      fetch(`${API_URL}/update_status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id, status: statusBaru })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        location.reload();
+      });
+    }
+  
+    function suspendUser(id, durationHari) {
+      fetch(`${API_URL}/update_status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id, status: "suspend", duration: durationHari })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        location.reload();
+      });
+    }
+  
+    function filterPengguna() {
+      const query = document.getElementById("search-input").value.trim().toLowerCase();
+      const hasilFilter = semuaPengguna.filter(user => {
+        return (
+          (user.nama && user.nama.toLowerCase().includes(query)) ||
+          (user.npm && user.npm.toLowerCase().includes(query)) ||
+          (user.email && user.email.toLowerCase().includes(query))
+        );
+      });
+      tampilkanPengguna(hasilFilter);
+    }
+  </script>
+  
+</body>
+</html>

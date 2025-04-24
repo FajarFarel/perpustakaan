@@ -1,0 +1,35 @@
+
+=== CATATAN GIT: NGODING DI BRANCH SENDIRI ===
+
+1. CEK BRANCH YANG AKTIF
+   git branch
+
+2. BUAT BRANCH BARU
+   git checkout -b nama-branch-kamu
+   Contoh: git checkout -b fitur-upload-gambar
+
+3. KERJA / NGODING DI BRANCH BARU
+   Semua perubahan cuma ada di branch ini, aman dari branch utama (main).
+
+4. SIMPAN DAN COMMIT PERUBAHAN
+   git add .
+   git commit -m "Deskripsi perubahan kamu"
+
+5. PUSH BRANCH KE GITHUB
+   git push origin nama-branch-kamu
+   Contoh: git push origin fitur-upload-gambar
+
+6. GABUNG KE MAIN JIKA SUDAH FIX
+
+   a. LEWAT GITHUB:
+      - Masuk ke repo
+      - Klik "Compare & pull request"
+      - Review → Merge
+
+   b. LEWAT TERMINAL:
+      git checkout main
+      git merge nama-branch-kamu
+
+TIPS:
+- Sering commit untuk jaga progress
+- Gunakan nama branch yang jelas (fitur-, fix-, ui-, dll)

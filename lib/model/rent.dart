@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:perpustakaan/penting/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+class BookScreen extends StatefulWidget {
+  const BookScreen({Key? key}) : super(key: key);
+
+  @override
+  _BookScreenState createState() => _BookScreenState();
+}
+
+class _BookScreenState extends State<BookScreen> {
+  List<Map<String, dynamic>> books = [];
+  Set<String> sudahDiberiNotifikasi = {};
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    _initNotifikasi();
+    ambilPeminjamanSaya();
+  }
+
+  void _initNotifikasi() async {
+    const AndroidInitializationSettings initSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initSettings =
+        InitializationSettings(android: initSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initSettings);
+  }
+
+  void showNotification(String title, String message) async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'reminder_channel',
+      'Pengingat Pengembalian',
+      channelDescription: 'Notifikasi pengingat buku',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
+    const NotificationDetails platformDetails =
+        NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      message,
+      platformDetails,
+    );
+  }
+
+  int calculateRemainingDays(DateTime returnDate) {
+    final now = DateTime.now();
+    final difference = returnDate.difference(now).inDays;
+    return difference;
+  }
+
+  Future<void> ambilPeminjamanSaya() async {
+    final prefs = await SharedPreferences.getInstance();
+    final npm = prefs.getString('npm');
+
+    if (npm != null) {
+      final response = await http.get(Uri.parse('$baseUrl/peminjaman_user/$npm'));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        final List<Map<String, dynamic>> bukuDipinjam = jsonData.map((item) {
+          final borrowDate = DateTime.parse(item['borrowDate']);
+          final returnDate = DateTime.parse(item['returnDate']);
+          final remainingDays = calculateRemainingDays(returnDate);
+          final isbn = item['isbn'];
+
+          if (remainingDays <= 3 &&
+              remainingDays >= 0 &&
+              !sudahDiberiNotifikasi.contains(isbn)) {
+            showNotification(
+              '📚 Pengingat Pengembalian Buku',
+              'Buku "${item['title']}" harus dikembalikan dalam $remainingDays hari!',
+            );
+            sudahDiberiNotifikasi.add(isbn);
+          }
+
+          return {
+            'title': item['title'],
+            'isbn': isbn,
+            'borrowDate': borrowDate,
+            'returnDate': returnDate,
+            'cover': item['cover'] ?? 'assets/placeholder.jpg',
+          };
+        }).toList();
+
+        setState(() {
+          books = bukuDipinjam;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Library Books",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.deepPurple,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      body: books.isEmpty
+          ? Center(
+              child: Text(
+                "No books available.",
+                style: TextStyle(fontSize: 18, color: Colors.deepPurple),
+              ),
+            )
+          : ListView.builder(
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                final book = books[index];
+                final borrowDate = book['borrowDate'] as DateTime;
+                final returnDate = book['returnDate'] as DateTime;
+                final remainingDays = calculateRemainingDays(returnDate);
+
+                String warningMessage = '';
+                if (remainingDays <= 3 && remainingDays >= 0) {
+                  warningMessage =
+                      "⚠️ Hati-hati! Waktu pengembalian tinggal $remainingDays hari lagi.";
+                } else if (remainingDays < 0) {
+                  warningMessage =
+                      "❌ Buku sudah melewati batas waktu pengembalian!";
+                }
+
+                return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  color: Color(0xFFF2E9F7),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('📚 Judul: ${book['title'] ?? 'Tidak tersedia'}'),
+                        SizedBox(height: 8),
+                        Text('Tanggal Peminjaman: ${borrowDate.toLocal().toString().split(" ")[0]}'),
+                        Text('Tanggal Pengembalian: ${returnDate.toLocal().toString().split(" ")[0]}'),
+                        if (warningMessage.isNotEmpty) ...[
+                          SizedBox(height: 12),
+                          Text(warningMessage, style: TextStyle(color: Colors.red)),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
