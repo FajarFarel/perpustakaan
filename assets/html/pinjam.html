@@ -280,6 +280,7 @@
     fetch(`${API_URL}/kembali/${id}`, { method: 'PUT' })
       .then(res => res.json())
       .then(() => {
+        loadBuku();
         loadPeminjamanAktif();
         updateStatistik();
         emitUpdateStatistik(); // 🔥 Emit ke Socket.IO
@@ -313,6 +314,12 @@
   loadBuku();
   loadPeminjamanAktif();
   updateStatistik();
+
+  socket.on('update_statistik', () => {
+  console.log("📡 Menerima update_statistik dari server");
+  updateStatistik();
+});
+
 </script>
 
 </div>

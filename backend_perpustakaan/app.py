@@ -555,7 +555,7 @@ def jumlah_buku_dipinjam():
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("SELECT COUNT(id_buku) FROM peminjaman_buku")
+                cursor.execute("SELECT COUNT(id_buku) FROM peminjaman_buku WHERE status = 'dipinjam'")
                 jumlah = cursor.fetchone()[0]
         return jsonify({'jumlah': jumlah}), 200
     except Exception as e:

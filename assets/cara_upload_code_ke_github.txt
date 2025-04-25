@@ -1,0 +1,32 @@
+Langkah Upload Code ke GitHub
+
+1. Buat Repository di GitHub
+   - Buka https://github.com
+   - Klik tombol "+" > pilih "New repository"
+   - Isi nama repository dan pengaturan lainnya
+   - Klik "Create repository"
+
+2. Siapkan Proyek di Komputer
+   - Buka terminal (Command Prompt / Git Bash)
+   - Masuk ke folder proyek:
+     cd /path/ke/folder/proyek
+   - Inisialisasi git (jika belum):
+     git init
+   - Tambahkan semua file:
+     git add .
+   - Commit perubahan:
+     git commit -m "Initial commit"
+
+3. Hubungkan ke Repository GitHub
+   - Salin URL repository GitHub, misalnya:
+     https://github.com/username/nama-repo.git
+   - Jalankan perintah:
+     git remote add origin https://github.com/username/nama-repo.git
+     git branch -M main
+     git push -u origin main
+
+4. Update Code Selanjutnya
+   - Setiap kali ada perubahan:
+     git add .
+     git commit -m "Pesan perubahan"
+     git push
