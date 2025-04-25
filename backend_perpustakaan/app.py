@@ -144,17 +144,25 @@ def login():
         cursor.execute("SELECT * FROM mahasiswa WHERE email = %s", (email,))
         user = cursor.fetchone()
 
-        if user and bcrypt.checkpw(password.encode(), user["password"].encode()):
-            user.pop("password", None)
+        if user:
+            if user['status'] == 'blokir':
+                return jsonify({"error": "Akun Anda telah diblokir."}), 403
+            elif user['status'] == 'suspend':
+                now = datetime.now()
+                suspend_until = user.get('suspend_until')
+                if suspend_until and now < suspend_until:
+                    return jsonify({"error": f"Akun Anda ditangguhkan hingga {suspend_until.strftime('%Y-%m-%d')}"}), 403
+                else:
+                    cursor.execute("UPDATE mahasiswa SET status = 'aktif', suspend_until = NULL WHERE id = %s", (user['id'],))
+                    conn.commit()
+                    user['status'] = 'aktif'
 
-            # ✅ Decode nama file jika masih dalam bentuk bytes
-            if isinstance(user.get("foto"), bytes):
-                user["foto"] = user["foto"].decode(errors="ignore")
-
-            # ✅ Buat URL untuk gambar
-            user["foto"] = f"{Base_URL}/uploads/{user['foto']}"  # ✅ fix!  # di /login endpoint
-
-            return jsonify({"message": "Login berhasil", "user": user}), 200
+            if bcrypt.checkpw(password.encode(), user["password"].encode()):
+                user.pop("password", None)
+                if isinstance(user.get("foto"), bytes):
+                    user["foto"] = user["foto"].decode(errors="ignore")
+                user["foto"] = f"{Base_URL}/uploads/{user['foto']}"
+                return jsonify({"message": "Login berhasil", "user": user}), 200
 
         return jsonify({"error": "Email atau password salah"}), 401
 

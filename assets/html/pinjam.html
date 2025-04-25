@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - Peminjaman Buku</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="config.js"></script>
   <style>
     * {
       margin: 0;
@@ -145,23 +148,35 @@
       height: auto;
       border-radius: 4px;
     }
+
+    button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: #0057D9;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #003f9e;
+}
+
   </style>
-  <script src="config.js"></script>
 </head>
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <body>
 <div class="sidebar">
-    <h2>Menu Admin</h2>
-    <ul>
-      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
-      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
-      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
-      <li onclick="window.location.href='laporan.html'">Laporan</li>
-      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li>
-      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li> 
-    </ul>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </div>
+  <h2>Menu Admin</h2>
+  <ul>
+    <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+    <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+    <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+    <li onclick="window.location.href='laporan.html'">Laporan</li>
+    <li onclick="window.location.href='pengaturan.html'">Pengaturan</li>
+    <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li> 
+  </ul>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
 
 <div class="main">
   <h2>Form Peminjaman Buku (Admin)</h2>
@@ -170,18 +185,34 @@
     📚 Buku Dipinjam: <span id="stat-dipinjam">0</span><br>
     👤 Peminjaman Aktif: <span id="stat-aktif">0</span>
   </div>  
-  <form id="pinjamForm">
-    <label for="id_mahasiswa">Mahasiswa:</label>
-    <select id="id_mahasiswa" required></select>
 
+  <form id="pinjamForm">
+    <!-- 🔍 Scan barcode / QR Mahasiswa -->
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+      <input type="text" id="scan_npm" 
+             placeholder="Scan barcode mahasiswa..." 
+             style="flex: 0 0 200px; padding: 6px;"
+             autocomplete="off" autofocus onfocus="this.select()">
+      <button type="button" onclick="mulaiScanQR()">📷 QR</button>
+    </div>
+    
+    <div id="info_mhs" style="margin-bottom: 10px; font-weight: bold;"></div>
+  
+    <!-- untuk menyimpan ID mahasiswa hasil scan -->
+    <input type="hidden" id="id_mahasiswa" name="id_mahasiswa">
+  
+    <div id="qr-reader" style="width:300px; margin-bottom: 10px;"></div>
+  
+    <!-- 📚 Pilih buku -->
     <label for="id_buku">Buku:</label>
     <select id="id_buku" required></select>
-
+  
     <label for="tanggal_kembali">Tanggal Pengembalian:</label>
     <input type="date" id="tanggal_kembali" required>
-
+  
     <button type="submit">Pinjamkan Buku</button>
   </form>
+  
 
   <h3>Daftar Peminjaman Aktif</h3>
   <table id="tabelPeminjaman">
@@ -198,130 +229,166 @@
     <tbody></tbody>
   </table>
 
- <!-- SEBELUM PENUTUP TAG BODY -->
- <script>
-  const socket = io(API_URL); // Socket.IO connection ke Flask server
+  <script>
+    const socket = io(API_URL);
 
-  function emitUpdateStatistik() {
-    socket.emit('update_statistik');
-    console.log("📡 Emit update_statistik dari HTML");
-  }
+    function emitUpdateStatistik() {
+      socket.emit('update_statistik');
+    }
 
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('tanggal_kembali').min = today;
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tanggal_kembali').min = today;
 
-  function updateStatistik() {
-    Promise.all([
-      fetch(`${API_URL}/jumlah-buku-dipinjam`).then(res => res.json()),
-      fetch(`${API_URL}/jumlah-peminjaman-aktif`).then(res => res.json())
-    ])
-    .then(([dipinjam, aktif]) => {
-      document.getElementById('stat-dipinjam').innerText = dipinjam.jumlah;
-      document.getElementById('stat-aktif').innerText = aktif.jumlah;
-    })
-    .catch(err => console.error("❌ Gagal ambil statistik:", err));
-  }
-
-  function loadMahasiswa() {
-    fetch(`${API_URL}/users`)
-      .then(res => res.json())
-      .then(data => {
-        const select = document.getElementById('id_mahasiswa');
-        select.innerHTML = '';
-        data.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id;
-          opt.textContent = m.nama;
-          select.appendChild(opt);
-        });
-      })
-      .catch(err => console.error("Gagal load mahasiswa:", err));
-  }
-
-  function loadBuku() {
-    fetch(`${API_URL}/data_buku`)
-      .then(res => res.json())
-      .then(json => {
-        const data = json.data_buku;
-        const select = document.getElementById('id_buku');
-        select.innerHTML = '';
-        data.forEach(b => {
-          const opt = document.createElement('option');
-          opt.value = b.id;
-          opt.textContent = `${b.judul} (${b.jumlah} tersedia)`;
-          select.appendChild(opt);
-        });
-      })
-      .catch(err => console.error("Gagal load buku:", err));
-  }
-
-  function loadPeminjamanAktif() {
-    fetch(`${API_URL}/peminjaman_aktif`)
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.querySelector('#tabelPeminjaman tbody');
-        tbody.innerHTML = '';
-        data.forEach(p => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${p.nama_mahasiswa}</td>
-            <td>${p.judul_buku}</td>
-            <td>${p.tanggal_pinjam}</td>
-            <td>${p.tanggal_kembali}</td>
-            <td>${p.status}</td>
-            <td><button onclick="kembalikan(${p.id})">Kembalikan</button></td>
-          `;
-          tbody.appendChild(tr);
-        });
+    function updateStatistik() {
+      Promise.all([
+        fetch(`${API_URL}/jumlah-buku-dipinjam`).then(res => res.json()),
+        fetch(`${API_URL}/jumlah-peminjaman-aktif`).then(res => res.json())
+      ])
+      .then(([dipinjam, aktif]) => {
+        document.getElementById('stat-dipinjam').innerText = dipinjam.jumlah;
+        document.getElementById('stat-aktif').innerText = aktif.jumlah;
       });
-  }
+    }
 
-  function kembalikan(id) {
-    fetch(`${API_URL}/kembali/${id}`, { method: 'PUT' })
+    function loadMahasiswa() {
+      fetch(`${API_URL}/users`)
+        .then(res => res.json())
+        .then(data => {
+          const select = document.getElementById('id_mahasiswa');
+          select.innerHTML = '';
+          data.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.textContent = m.nama;
+            select.appendChild(opt);
+          });
+        });
+    }
+
+    function loadBuku() {
+      fetch(`${API_URL}/data_buku`)
+        .then(res => res.json())
+        .then(json => {
+          const data = json.data_buku;
+          const select = document.getElementById('id_buku');
+          select.innerHTML = '';
+          data.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.id;
+            opt.textContent = `${b.judul} (${b.jumlah} tersedia)`;
+            select.appendChild(opt);
+          });
+        });
+    }
+
+    function loadPeminjamanAktif() {
+      fetch(`${API_URL}/peminjaman_aktif`)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector('#tabelPeminjaman tbody');
+          tbody.innerHTML = '';
+          data.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${p.nama_mahasiswa}</td>
+              <td>${p.judul_buku}</td>
+              <td>${p.tanggal_pinjam}</td>
+              <td>${p.tanggal_kembali}</td>
+              <td>${p.status}</td>
+              <td><button onclick="kembalikan(${p.id})">Kembalikan</button></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    function kembalikan(id) {
+      fetch(`${API_URL}/kembali/${id}`, { method: 'PUT' })
+        .then(res => res.json())
+        .then(() => {
+          loadBuku();
+          loadPeminjamanAktif();
+          updateStatistik();
+          emitUpdateStatistik();
+        });
+    }
+
+    document.getElementById('pinjamForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id_mahasiswa = document.getElementById('id_mahasiswa').value;
+      const id_buku = document.getElementById('id_buku').value;
+      const tanggal_kembali = document.getElementById('tanggal_kembali').value;
+
+      fetch(`${API_URL}/pinjam`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_mahasiswa, id_buku, tanggal_kembali })
+      })
       .then(res => res.json())
       .then(() => {
         loadBuku();
         loadPeminjamanAktif();
         updateStatistik();
-        emitUpdateStatistik(); // 🔥 Emit ke Socket.IO
+        emitUpdateStatistik();
+        document.getElementById('pinjamForm').reset();
       });
-  }
+    });
 
-  document.getElementById('pinjamForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const id_mahasiswa = document.getElementById('id_mahasiswa').value;
-    const id_buku = document.getElementById('id_buku').value;
-    const tanggal_kembali = document.getElementById('tanggal_kembali').value;
+    // ⛳ Load saat halaman dimuat
+    loadMahasiswa();
+    loadBuku();
+    loadPeminjamanAktif();
+    updateStatistik();
 
-    fetch(`${API_URL}/pinjam`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_mahasiswa, id_buku, tanggal_kembali })
-    })
-    .then(res => res.json())
-    .then(() => {
-      loadBuku();
-      loadPeminjamanAktif();
+    socket.on('update_statistik', () => {
       updateStatistik();
-      emitUpdateStatistik(); // 🔥 Emit juga saat pinjam
-      document.getElementById('pinjamForm').reset();
-    })
-    .catch(err => console.error("Gagal meminjam:", err));
-  });
+    });
 
-  // ⛳️ Saat halaman selesai dimuat
-  loadMahasiswa();
-  loadBuku();
-  loadPeminjamanAktif();
-  updateStatistik();
+    // 🔍 Handle Scan Barcode
+    document.getElementById('scan_npm').addEventListener('keypress', async function(e) {
+      if (e.key === 'Enter') {
+        const scannedNPM = this.value.trim();
+        const res = await fetch(`${API_URL}/users`);
+        const data = await res.json();
+        const mhs = data.find(m => m.npm === scannedNPM);
+        if (mhs) {
+          document.getElementById('id_mahasiswa').value = mhs.id;
+          alert(`✅ Mahasiswa ditemukan: ${mhs.nama}`);
+        } else {
+          alert("❌ Mahasiswa tidak ditemukan!");
+        }
+        this.value = "";
+      }
+    });
 
-  socket.on('update_statistik', () => {
-  console.log("📡 Menerima update_statistik dari server");
-  updateStatistik();
-});
+    // 📷 Handle QR Scanner
+    function mulaiScanQR() {
+      const qrReader = new Html5Qrcode("qr-reader");
 
-</script>
+      qrReader.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        async (decodedText) => {
+          qrReader.stop();
 
+          const response = await fetch(`${API_URL}/users`);
+          const users = await response.json();
+
+          const mahasiswa = users.find(m => m.npm === decodedText);
+          if (mahasiswa) {
+            document.getElementById("id_mahasiswa").value = mahasiswa.id;
+            alert(`Mahasiswa ditemukan: ${mahasiswa.nama}`);
+          } else {
+            alert("❌ Mahasiswa tidak ditemukan!");
+          }
+
+          document.getElementById("qr-reader").innerHTML = "";
+        }
+      ).catch(err => {
+        console.error("Gagal mulai kamera QR:", err);
+      });
+    }
+  </script>
 </div>
 
 <script>

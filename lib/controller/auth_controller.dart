@@ -12,7 +12,7 @@ class AuthController extends GetxController {
   static AuthController instance = Get.find();
 
   void loginUser(BuildContext context, String email, String password) async {
-    var url = Uri.parse('$baseUrl/login'); // Ganti dengan URL backend
+    var url = Uri.parse('$baseUrl/login');
 
     print("🔄 Mengirim data login...");
     print("Email: $email, Password: $password");
@@ -27,23 +27,21 @@ class AuthController extends GetxController {
       print("📥 Response status: ${response.statusCode}");
       print("📥 Response body: ${response.body}");
 
+      final data = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
-        var user = responseData['user'];
+        var user = data['user'];
         var userRole = user['role'];
 
         print("✅ Login Berhasil!");
-        print("User Data: $responseData");
+        print("User Data: $data");
 
-        // Simpan data ke SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString("user", jsonEncode(user));
-        await prefs.setString("npm", user['npm']); // ✅ Tambahkan ini
+        await prefs.setString("npm", user['npm']);
         await prefs.setString("loginTime", DateTime.now().toIso8601String());
         await prefs.setBool("isLoggedIn", true);
-        
 
-        // Navigasi ke halaman sesuai role
         if (userRole == 'admin') {
           print("🚀 Navigasi ke AdminHomePage");
           Get.offAll(() => AdminHomePage());
@@ -52,15 +50,19 @@ class AuthController extends GetxController {
           Get.offAll(() => HomePage(
                 name: user['nama'],
                 email: user['email'],
-                foto: user['foto'], // Kirim URL, bukan File
+                foto: user['foto'],
                 alamat: user['alamat'],
                 noTelp: user['noTelp'],
                 npm: user['npm'],
               ));
         }
       } else {
-        print("❌ Gagal Login: ${response.body}");
-        Get.snackbar('Login Gagal', 'Email atau password salah');
+        final errorMessage = data['error'] ?? 'Email atau password salah';
+        print("❌ Gagal Login: $errorMessage");
+        Get.snackbar('Login Gagal', errorMessage,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
       }
     } catch (e) {
       print("❌ Error: $e");
