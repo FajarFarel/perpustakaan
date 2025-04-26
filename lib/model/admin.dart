@@ -125,7 +125,7 @@ void setupSocket() {
                   _buildActionCard("Kelola Pengguna", Icons.people, Colors.blue, "/kelolaPengguna", context),
                   _buildActionCard("Kelola Buku", Icons.book, Colors.green, "/kelolaBuku", context),
                   _buildActionCard("Pengaturan", Icons.settings, Colors.orange, "/pengaturan", context),
-                  _buildActionCard("Laporan", Icons.bar_chart, Colors.red, "/laporan", context),
+                  // _buildActionCard("Laporan", Icons.bar_chart, Colors.red, "/laporan", context),
                   _buildActionCard("Logout", Icons.logout, Colors.grey, "/logout", context),
                 ],
               ),

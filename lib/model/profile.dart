@@ -44,7 +44,7 @@ imageUrl = widget.foto != null && widget.foto!.isNotEmpty
   @override
   Widget build(BuildContext context) {
     String qrData =
-        'Name: ${widget.name}\nEmail: ${widget.email}\nAlamat: ${widget.alamat}\nNo. Telp: ${widget.noTelp}\nNPM: ${widget.npm}';
+        '${widget.npm}';
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +63,7 @@ imageUrl = widget.foto != null && widget.foto!.isNotEmpty
                   backgroundImage: widget.foto != null &&
                           widget.foto!.isNotEmpty
                       ? NetworkImage(imageUrl)
-                      : AssetImage("assets/default_image.png") as ImageProvider,
+                      : AssetImage("assets/default.jpg") as ImageProvider,
                   onBackgroundImageError: (exception, stackTrace) {
                     print("Gagal memuat gambar: $exception");
                   },

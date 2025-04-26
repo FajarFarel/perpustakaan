@@ -120,11 +120,12 @@ class _PengaturanPageState extends State<PengaturanPage> {
                       radius: 60,
                       backgroundImage: _image != null
                           ? FileImage(_image!)
-                          : (fotoUrl != null &&
-                                  fotoUrl!.startsWith('data:image')
-                              ? MemoryImage(
-                                  base64Decode(fotoUrl!.split(',').last))
-                              : AssetImage('assets/default_image.png')
+                          : (fotoUrl != null
+                              ? (fotoUrl!.startsWith('data:image')
+                                  ? MemoryImage(
+                                      base64Decode(fotoUrl!.split(',').last))
+                                  : NetworkImage(fotoUrl!) as ImageProvider)
+                              : AssetImage('assets/default.jpg')
                                   as ImageProvider),
                     ),
                     Positioned(

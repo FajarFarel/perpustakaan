@@ -226,7 +226,7 @@ def update_profile(npm):
         if new_password:
             if not bcrypt.checkpw(old_password.encode(), user['password'].encode()):
                 return jsonify({"error": "Password lama salah!"}), 400
-            password_baru = new_password
+            password_baru = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
         else:
             password_baru = user['password']
 

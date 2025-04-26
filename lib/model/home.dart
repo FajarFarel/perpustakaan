@@ -289,7 +289,7 @@ class HomePageState extends State<HomePage>
               currentAccountPicture: CircleAvatar(
                 backgroundImage: widget.foto != null && widget.foto!.isNotEmpty
                     ? NetworkImage(imageUrl)
-                    : const AssetImage("assets/default_image.png")
+                    : const AssetImage("assets/default.jpg")
                         as ImageProvider,
                 onBackgroundImageError: (exception, stackTrace) {
                   print("Gagal memuat gambar: $exception");
@@ -385,13 +385,13 @@ class HomePageState extends State<HomePage>
                         SimpleDialogOption(
                           onPressed: () async {
                             Navigator.pop(context);
-                            final url =
-                                Uri.parse('https://www.instagram.com/andhikakaa09');
+                            final url = Uri.parse(
+                                'https://www.instagram.com/andhikakaa09');
                             if (await canLaunchUrl(url)) {
                               await launchUrl(url);
                             }
                           },
-                          child: Text('Instagram Admin'), 
+                          child: Text('Instagram Admin'),
                         ),
                         SimpleDialogOption(
                           onPressed: () async {
@@ -399,7 +399,10 @@ class HomePageState extends State<HomePage>
                             final emailUri = Uri.parse(
                                 'mailto:farelparjo@gmail.com?subject=Butuh%20Bantuan&body=Halo%20Admin%2C%20saya%20ingin%20bertanya...');
                             if (await canLaunchUrl(emailUri)) {
-                              await launchUrl(emailUri);
+                              await launchUrl(
+                                emailUri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             } else {
                               throw 'Tidak bisa membuka aplikasi email';
                             }
