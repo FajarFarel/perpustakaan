@@ -10,6 +10,7 @@ import '../controller/book_controller.dart';
 import '../model/book_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:perpustakaan/model/pengaturan_page.dart';
+import 'package:perpustakaan/controller/colors.dart';
 
 class HomePage extends StatefulWidget {
   final String name;
@@ -120,8 +121,8 @@ class HomePageState extends State<HomePage>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color.fromRGBO(2, 163, 163, 100),
-            Color.fromRGBO(6, 136, 136, 1)
+            AppColors.gradientTop,
+            AppColors.gradientBottom,
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -133,13 +134,14 @@ class HomePageState extends State<HomePage>
               ? Center(
                   child: Text(
                     "Book not found",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    style:
+                        TextStyle(fontSize: 18, color: AppColors.textPrimary),
                   ),
                 )
               : GridView.builder(
                   padding: const EdgeInsets.all(16.0),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200, // batas maksimal lebar setiap item
+                    maxCrossAxisExtent: 200,
                     mainAxisSpacing: 16.0,
                     crossAxisSpacing: 16.0,
                     childAspectRatio: 3 / 4,
@@ -149,7 +151,7 @@ class HomePageState extends State<HomePage>
                     final book = _filteredBooks[index];
                     return Center(
                       child: SizedBox(
-                        width: 180, // Atur ukuran tetap kartu, ini kuncinya
+                        width: 180,
                         child: GestureDetector(
                           onTap: () => _showBookDetails(context, {
                             'title': book.judul,
@@ -191,8 +193,10 @@ class HomePageState extends State<HomePage>
                                     book.judul,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: AppColors.textPrimary,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -234,8 +238,8 @@ class HomePageState extends State<HomePage>
                 _isSearching ? BorderRadius.circular(0) : BorderRadius.zero,
           ),
           child: AppBar(
-            iconTheme: IconThemeData(color: const Color.fromARGB(255, 0, 0, 0)),
             backgroundColor: Colors.transparent,
+            iconTheme: IconThemeData(color: AppColors.textPrimary),
             title: AnimatedSwitcher(
               duration: Duration(milliseconds: 1000),
               transitionBuilder: (Widget child, Animation<double> animation) {
@@ -250,9 +254,9 @@ class HomePageState extends State<HomePage>
                       decoration: InputDecoration(
                         hintText: "Search books...",
                         border: InputBorder.none,
-                        hintStyle: TextStyle(color: Colors.white70),
+                        hintStyle: TextStyle(color: AppColors.textSecondary),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: AppColors.textPrimary),
                     )
                   : Text(
                       'Welcome, ${widget.name}',
@@ -284,13 +288,15 @@ class HomePageState extends State<HomePage>
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(widget.name),
-              accountEmail: Text(widget.email),
+              decoration: BoxDecoration(
+                color: AppColors.secondary,
+              ),
+              accountName: Text(widget.name, style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w400)),
+              accountEmail: Text(widget.email, style: TextStyle(color: AppColors.textSecondary)),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: widget.foto != null && widget.foto!.isNotEmpty
                     ? NetworkImage(imageUrl)
-                    : const AssetImage("assets/default.jpg")
-                        as ImageProvider,
+                    : const AssetImage("assets/default.jpg") as ImageProvider,
                 onBackgroundImageError: (exception, stackTrace) {
                   print("Gagal memuat gambar: $exception");
                 },

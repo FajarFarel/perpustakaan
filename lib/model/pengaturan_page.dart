@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:perpustakaan/controller/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -102,101 +102,115 @@ class _PengaturanPageState extends State<PengaturanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pengaturan Profil', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
-        iconTheme: IconThemeData(color: Colors.white),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.gradientTop,
+            AppColors.gradientBottom,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
-          child: Column(
-            children: [
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage: _image != null
-                          ? FileImage(_image!)
-                          : (fotoUrl != null
-                              ? (fotoUrl!.startsWith('data:image')
-                                  ? MemoryImage(
-                                      base64Decode(fotoUrl!.split(',').last))
-                                  : NetworkImage(fotoUrl!) as ImageProvider)
-                              : AssetImage('assets/default.jpg')
-                                  as ImageProvider),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 4,
-                      child: Container(
-                        padding: EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: InkWell(
-                          onTap: _pickImage,
-                          child: Icon(Icons.edit,
-                              size: 20, color: Colors.deepPurple),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text('Pengaturan Profil', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+            backgroundColor: AppColors.secondary,
+            iconTheme: IconThemeData(color: AppColors.textPrimary),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+            child: Column(
+              children: [
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundImage: _image != null
+                            ? FileImage(_image!)
+                            : (fotoUrl != null
+                                ? (fotoUrl!.startsWith('data:image')
+                                    ? MemoryImage(
+                                        base64Decode(fotoUrl!.split(',').last))
+                                    : NetworkImage(fotoUrl!) as ImageProvider)
+                                : AssetImage('assets/default.jpg')
+                                    as ImageProvider),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 4,
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: InkWell(
+                            onTap: _pickImage,
+                            child: Icon(Icons.edit,
+                                size: 20, color: AppColors.primary),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 30),
-              Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF4F4F4),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1), // Bayangan tipis
-                      blurRadius: 8, // seberapa lembut bayangannya
-                      offset: Offset(0, 4), // posisi: horizontal, vertical
-                    ),
-                  ],
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      _buildInputField("Nama", namaController),
-                      _buildInputField("Email", emailController),
-                      _buildInputField("Alamat", alamatController),
-                      _buildInputField("No. Telepon", noTelpController),
-                      _buildInputField("Password Lama", oldPasswordController,
-                          obscure: true),
-                      _buildInputField("Password Baru", newPasswordController,
-                          obscure: true),
                     ],
                   ),
                 ),
-              ),
-              SizedBox(height: 25),
-              ElevatedButton(
-                onPressed: _simpanPerubahan,
-                style: ElevatedButton.styleFrom(
-                  shape: StadiumBorder(),
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 18),
-                  backgroundColor: Colors.deepPurple,
-                  elevation: 4,
+                SizedBox(height: 30),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    border: Border.all(color: AppColors.divider, width: 1),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1), // Bayangan tipis
+                        blurRadius: 8, // seberapa lembut bayangannya
+                        offset: Offset(0, 4), // posisi: horizontal, vertical
+                      ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        _buildInputField("Nama", namaController),
+                        // _buildInputField("Email", emailController),
+                        _buildInputField("Alamat", alamatController),
+                        _buildInputField("No. Telepon", noTelpController),
+                        _buildInputField("Password Lama", oldPasswordController,
+                            obscure: true),
+                        _buildInputField("Password Baru", newPasswordController,
+                            obscure: true),
+                      ],
+                    ),
+                  ),
                 ),
-                child: Text('Simpan Perubahan',
-                    style: TextStyle(color: Colors.white)),
-              ),
-            ],
+                SizedBox(height: 25),
+                ElevatedButton(
+                  onPressed: _simpanPerubahan,
+                  style: ElevatedButton.styleFrom(
+                    shape: StadiumBorder(),
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 18),
+                    backgroundColor: AppColors.primary,
+                    elevation: 4,
+                  ),
+                  child: Text('Simpan Perubahan',
+                      style: TextStyle(color: AppColors.textPrimary)),
+                ),
+              ],
+            ),
           ),
         ),
       ),

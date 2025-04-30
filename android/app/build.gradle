@@ -42,3 +42,12 @@ android {
 flutter {
     source = "../.."
 }
+
+// Tambahkan ini setelah flutter block
+android.applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+        def appName = "perpustakaan"
+        def versionName = variant.versionName
+        outputFileName = "${appName}-v${versionName}.apk"
+    }
+}

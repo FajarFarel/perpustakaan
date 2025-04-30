@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:perpustakaan/penting/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:perpustakaan/controller/colors.dart';
 
 class BookScreen extends StatefulWidget {
   const BookScreen({Key? key}) : super(key: key);
@@ -105,22 +106,50 @@ class _BookScreenState extends State<BookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.gradientTop,
+            AppColors.gradientBottom,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           "Library Books",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
         ),
-        backgroundColor: Colors.deepPurple,
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: AppColors.secondary,
+        iconTheme: IconThemeData(color: AppColors.textPrimary), 
       ),
       body: books.isEmpty
           ? Center(
-              child: Text(
-                "No books available.",
-                style: TextStyle(fontSize: 18, color: Colors.deepPurple),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Lingkaran putih sebagai background
+            // Image.asset(
+            //   'assets/Ellipse_7.png',
+            //   width: 160,
+            //   height: 160,
+            // ),
+            // Logo bookshelf di atasnya
+            Opacity(
+              opacity: 0.6,
+              child: Image.asset(
+                'assets/bookshelf_1.png',
+                width: 160,
+                height: 160,
               ),
-            )
+            ),
+          ],
+        ),
+      )
           : ListView.builder(
               itemCount: books.length,
               itemBuilder: (context, index) {
@@ -162,6 +191,7 @@ class _BookScreenState extends State<BookScreen> {
                 );
               },
             ),
+    )
     );
   }
 }

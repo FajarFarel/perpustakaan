@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:convert';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -190,7 +191,7 @@ class _RegisterPageState extends State<RegisterPage> {
           'Number must be up to 12 digits long and contain only numbers');
     } else if (email.isEmpty || !email.endsWith('@gmail.com')) {
       _showErrorDialog('Email must end with @gmail.com');
-    } else if (!RegExp(r'^\d{1,6}$').hasMatch(password)) {
+    } else if (!RegExp(r'^\d{1,8}$').hasMatch(password)) {
       _showErrorDialog(
           'Password must be up to 8 digits long and contain only numbers');
     } else {
@@ -218,10 +219,17 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: const Text('Register',style: TextStyle(color: Colors.white)),
+          title: Text('Register',
+              style: TextStyle(
+                  color: _isDarkMode
+                      ? Colors.white
+                      : Color.fromRGBO(33, 33, 33, 1))),
           backgroundColor: Colors.transparent,
-          iconTheme: const IconThemeData(
-            color: Colors.white, // Change the color of the back button
+          iconTheme: IconThemeData(
+            color: _isDarkMode
+                ? Colors.white
+                : Color.fromRGBO(
+                    33, 33, 33, 1), // Change the color of the back button
           ),
           elevation: 0,
           actions: [
@@ -236,7 +244,10 @@ class _RegisterPageState extends State<RegisterPage> {
               gradient: LinearGradient(
                 colors: _isDarkMode
                     ? [Colors.black, Colors.grey[900]!]
-                    : [Colors.blue[200]!, Colors.blue[800]!],
+                    : [
+                        Color.fromRGBO(227, 242, 253, 1),
+                        Color.fromRGBO(187, 222, 251, 1)
+                      ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -322,17 +333,22 @@ class _RegisterPageState extends State<RegisterPage> {
                           Container(
                               padding: const EdgeInsets.all(16.0),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Column(children: [
                                 TextField(
                                   controller: _nameController,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: _isDarkMode
+                                          ? Colors.white
+                                          : Color.fromRGBO(33, 33, 33, 1)),
                                   decoration: InputDecoration(
                                     labelText: 'Name',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
+                                    labelStyle: TextStyle(
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(117, 117, 117, 1)),
                                     border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(10)),
@@ -341,11 +357,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                 SizedBox(height: 16.0),
                                 TextField(
                                   controller: _alamatController,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: _isDarkMode
+                                          ? Colors.white
+                                          : Color.fromRGBO(33, 33, 33, 1)),
                                   decoration: InputDecoration(
                                     labelText: 'Alamat',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
+                                    labelStyle: TextStyle(
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(117, 117, 117, 1)),
                                     border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(10)),
@@ -354,12 +375,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                 SizedBox(height: 16.0),
                                 TextField(
                                   controller: _npmController,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: _isDarkMode
+                                          ? Colors.white
+                                          : Color.fromRGBO(33, 33, 33, 1)),
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText: 'NPM',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
+                                    labelStyle: TextStyle(
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(117, 117, 117, 1)),
                                     border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(10)),
@@ -368,12 +394,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                 SizedBox(height: 16.0),
                                 TextField(
                                   controller: _noTelpController,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: _isDarkMode
+                                          ? Colors.white
+                                          : Color.fromRGBO(33, 33, 33, 1)),
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText: 'No Tlp',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
+                                    labelStyle: TextStyle(
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(117, 117, 117, 1)),
                                     border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(10)),
@@ -382,14 +413,19 @@ class _RegisterPageState extends State<RegisterPage> {
                                 SizedBox(height: 16.0),
                                 TextField(
                                   controller: _emailController,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: _isDarkMode
+                                          ? Colors.white
+                                          : Color.fromRGBO(33, 33, 33, 1)),
                                   decoration: InputDecoration(
                                     labelText: 'Email',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
+                                    labelStyle: TextStyle(
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(117, 117, 117, 1)),
                                     border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 16.0),
@@ -397,20 +433,27 @@ class _RegisterPageState extends State<RegisterPage> {
                                   controller: _passwordController,
                                   keyboardType: TextInputType.number,
                                   obscureText: _obscurePassword,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: _isDarkMode
+                                          ? Colors.white
+                                          : Color.fromRGBO(33, 33, 33, 1)),
                                   decoration: InputDecoration(
                                     labelText: 'Password',
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
+                                    labelStyle: TextStyle(
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(117, 117, 117, 1)),
                                     border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         _obscurePassword
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                        color: Colors.white,
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: _isDarkMode
+                                            ? Colors.white
+                                            : Color.fromRGBO(33, 33, 33, 1),
                                       ),
                                       onPressed: () {
                                         setState(() {
@@ -506,12 +549,17 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Login', style: TextStyle(color: Colors.white)),
+        title: Text('Login',
+            style: TextStyle(
+                color: _isDarkMode
+                    ? Colors.white
+                    : Color.fromRGBO(33, 33, 33, 1))),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(_isDarkMode ? Icons.dark_mode : Icons.light_mode),
+            color: _isDarkMode ? Colors.white : Color.fromRGBO(33, 33, 33, 1),
             onPressed: _toggleDarkMode,
           ),
         ],
@@ -524,7 +572,10 @@ class _LoginPageState extends State<LoginPage> {
               gradient: LinearGradient(
                 colors: _isDarkMode
                     ? [Colors.black, Colors.grey[900]!]
-                    : [Colors.blue[200]!, Colors.blue[800]!],
+                    : [
+                        Color.fromRGBO(227, 242, 253, 1),
+                        Color.fromRGBO(187, 222, 251, 1)
+                      ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -538,12 +589,14 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Title
-                    const Text(
+                    Text(
                       'Selamat Datang di Perpustakaan Fakultas Kedokteran',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: _isDarkMode
+                            ? Colors.white
+                            : Color.fromRGBO(33, 33, 33, 1),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -563,17 +616,23 @@ class _LoginPageState extends State<LoginPage> {
                     Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(
                         children: [
                           TextField(
                             controller: _emailController,
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(
+                                color: _isDarkMode
+                                    ? Colors.white
+                                    : Color.fromRGBO(33, 33, 33, 1)),
                             decoration: InputDecoration(
                               labelText: 'Email',
-                              labelStyle: const TextStyle(color: Colors.white),
+                              labelStyle: TextStyle(
+                                  color: _isDarkMode
+                                      ? Colors.white
+                                      : Color.fromRGBO(117, 117, 117, 1)),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -584,19 +643,27 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordController,
                             keyboardType: TextInputType.number,
                             obscureText: _obscurePassword,
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(
+                                color: _isDarkMode
+                                    ? Colors.white
+                                    : Color.fromRGBO(33, 33, 33, 1)),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              labelStyle: const TextStyle(color: Colors.white),
+                              labelStyle: TextStyle(
+                                  color: _isDarkMode
+                                      ? Colors.white
+                                      : Color.fromRGBO(117, 117, 117, 1)),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Colors.white,
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: _isDarkMode
+                                      ? Colors.white
+                                      : Color.fromRGBO(33, 33, 33, 1),
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -631,8 +698,11 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => RegisterPage()),
                               );
                             },
-                            child: const Text('Belum punya akun? Daftar',
-                                style: TextStyle(color: Colors.white)),
+                            child: Text('Belum punya akun? Daftar',
+                                style: TextStyle(
+                                    color: _isDarkMode
+                                        ? Colors.white
+                                        : Color.fromRGBO(33, 33, 33, 1))),
                           ),
                         ],
                       ),
