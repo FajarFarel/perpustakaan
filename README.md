@@ -57,22 +57,20 @@ Tabel Peminjaman
 id, id_buku, id_mahasiswa, tanggal_pinjam, tanggal_kembali, status
 
 
+
 🚀 Cara Menjalankan Aplikasi
 
 Backend
 
 cd C:\Users\(nama_device)\perpustakaan\backend_perpustakaan
-
 python app.py
-
 
 Frontend
 
 cd perpustakaan
-
 flutter pub get
-
 flutter run
+
 
 
 📌 Catatan
@@ -80,8 +78,9 @@ Notifikasi pengembalian muncul 3 hari sebelum batas waktu pengembalian,
 Buku yang telah dikembalikan tidak muncul di halaman peminjaman aktif, 
 Hanya admin yang bisa mengelola data buku dan pengguna.
 
+
+
 ✍️ Kontributor
 
 Fajar – Pengembang Utama
-
 Leo – Asisten AI 😄
