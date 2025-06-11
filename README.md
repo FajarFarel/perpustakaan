@@ -1,6 +1,8 @@
 📚 Perpustakaan Digital
 Aplikasi Perpustakaan Digital yang memungkinkan pengguna untuk melakukan peminjaman, pengembalian, dan manajemen buku secara online. Aplikasi ini mendukung fitur notifikasi pengembalian, autentikasi pengguna, serta manajemen admin.
 
+
+
 🧩 Fitur Utama
 
 🔐 Login & Register Mahasiswa
@@ -16,6 +18,7 @@ Aplikasi Perpustakaan Digital yang memungkinkan pengguna untuk melakukan peminja
 🧾 Riwayat Peminjaman
 
 📸 Upload Sampul Buku
+
 
 
 🛠️ Teknologi yang Digunakan
@@ -36,6 +39,7 @@ Backend (Flask)
 REST API
 
 MySQL
+
 
 
 🗃️ Struktur Database (Contoh)
