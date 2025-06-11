@@ -171,29 +171,36 @@
       }
     });
   });
-  function loadAnggota() {
-    fetch(`${API_URL}/users`)
-      .then(res => res.json())
-      .then(data => {
-        const tableBody = document.getElementById("anggota-body");
-        tableBody.innerHTML = "";
+function loadAnggota() {
+  fetch(`${API_URL}/users`)
+    .then(res => res.json())
+    .then(data => {
+      const tableBody = document.getElementById("anggota-body");
+      const table = document.getElementById("anggota-table");
 
-        data.forEach((mhs, index) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${mhs.nama}</td>
-            <td>${mhs.nim}</td>
-            <td>${mhs.prodi}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      })
-      .catch(err => {
-        console.error("Gagal mengambil data anggota:", err);
+      if (!tableBody || !table) {
+        console.warn("Elemen tabel anggota tidak ditemukan.");
+        return;
+      }
+
+      table.style.display = "table"; // munculkan tabel
+      tableBody.innerHTML = "";
+
+      data.forEach((mhs, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${mhs.nama}</td>
+          <td>${mhs.nim}</td>
+          <td>${mhs.prodi}</td>
+        `;
+        tableBody.appendChild(row);
       });
-  }
-
+    })
+    .catch(err => {
+      console.error("Gagal mengambil data anggota:", err);
+    });
+}
   // Panggil saat halaman selesai dimuat
   document.addEventListener("DOMContentLoaded", loadAnggota);
   </script>

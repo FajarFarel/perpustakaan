@@ -15,3 +15,8 @@ def get_connection():
     except pymysql.MySQLError as e:
         print(f"❌ Gagal koneksi ke database: {e}")
         return None
+
+if __name__ == "__main__":
+    conn = get_connection()
+    if conn:
+        conn.close()

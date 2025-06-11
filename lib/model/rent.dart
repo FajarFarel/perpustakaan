@@ -64,12 +64,22 @@ class _BookScreenState extends State<BookScreen> {
     return difference;
   }
 
-  Future<void> ambilPeminjamanSaya() async {
-    final prefs = await SharedPreferences.getInstance();
-    final npm = prefs.getString('npm');
+Future<void> ambilPeminjamanSaya() async {
+  final prefs = await SharedPreferences.getInstance();
 
-    if (npm != null) {
-      final response = await http.get(Uri.parse('$baseUrl/peminjaman_user/$npm'));
+  await Future.delayed(Duration(milliseconds: 100)); // Tambahkan delay
+
+  final npm = prefs.getString('npm');
+  print('📦 NPM dari SharedPreferences di rent.dart: $npm');
+
+  if (npm == null) {
+    print('❌ GAGAL: NPM tidak ditemukan di SharedPreferences');
+    return;
+  }
+
+  final response = await http.get(Uri.parse('$baseUrl/peminjaman_user/$npm'));
+  print('📡 URL: $baseUrl/peminjaman_user/$npm');
+  print('📥 Response body: ${response.body}');
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
         final List<Map<String, dynamic>> bukuDipinjam = jsonData.map((item) {
@@ -101,7 +111,6 @@ class _BookScreenState extends State<BookScreen> {
           books = bukuDipinjam;
         });
       }
-    }
   }
 
   @override
@@ -117,81 +126,81 @@ class _BookScreenState extends State<BookScreen> {
           end: Alignment.bottomRight,
         ),
       ),
-      child: Scaffold(
+      child: Scaffold(  
         backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-          "Library Books",
-          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+        appBar: AppBar(
+          title: Text(
+            "Library Books",
+            style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+          ),
+          backgroundColor: AppColors.secondary,
+          iconTheme: IconThemeData(color: AppColors.textPrimary), 
         ),
-        backgroundColor: AppColors.secondary,
-        iconTheme: IconThemeData(color: AppColors.textPrimary), 
-      ),
-      body: books.isEmpty
-          ? Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Lingkaran putih sebagai background
-            // Image.asset(
-            //   'assets/Ellipse_7.png',
-            //   width: 160,
-            //   height: 160,
-            // ),
-            // Logo bookshelf di atasnya
-            Opacity(
-              opacity: 0.6,
-              child: Image.asset(
-                'assets/bookshelf_1.png',
-                width: 160,
-                height: 160,
-              ),
-            ),
-          ],
-        ),
-      )
-          : ListView.builder(
-              itemCount: books.length,
-              itemBuilder: (context, index) {
-                final book = books[index];
-                final borrowDate = book['borrowDate'] as DateTime;
-                final returnDate = book['returnDate'] as DateTime;
-                final remainingDays = calculateRemainingDays(returnDate);
-
-                String warningMessage = '';
-                if (remainingDays <= 3 && remainingDays >= 0) {
-                  warningMessage =
-                      "⚠️ Hati-hati! Waktu pengembalian tinggal $remainingDays hari lagi.";
-                } else if (remainingDays < 0) {
-                  warningMessage =
-                      "❌ Buku sudah melewati batas waktu pengembalian!";
-                }
-
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                  color: Color(0xFFF2E9F7),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('📚 Judul: ${book['title'] ?? 'Tidak tersedia'}'),
-                        SizedBox(height: 8),
-                        Text('Tanggal Peminjaman: ${borrowDate.toLocal().toString().split(" ")[0]}'),
-                        Text('Tanggal Pengembalian: ${returnDate.toLocal().toString().split(" ")[0]}'),
-                        if (warningMessage.isNotEmpty) ...[
-                          SizedBox(height: 12),
-                          Text(warningMessage, style: TextStyle(color: Colors.red)),
-                        ],
-                      ],
+        body: books.isEmpty
+            ? Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Lingkaran putih sebagai background
+                    // Image.asset(
+                    //   'assets/Ellipse_7.png',
+                    //   width: 160,
+                    //   height: 160,
+                    // ),
+                    // Logo bookshelf di atasnya
+                    Opacity(
+                      opacity: 0.6,
+                      child: Image.asset(
+                        'assets/bookshelf_1.png',
+                        width: 160,
+                        height: 160,
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-    )
+                  ],
+                ),
+              )
+            : ListView.builder(
+                itemCount: books.length,
+                itemBuilder: (context, index) {
+                  final book = books[index];
+                  final borrowDate = book['borrowDate'] as DateTime;
+                  final returnDate = book['returnDate'] as DateTime;
+                  final remainingDays = calculateRemainingDays(returnDate);
+
+                  String warningMessage = '';
+                  if (remainingDays <= 3 && remainingDays >= 0) {
+                    warningMessage =
+                        "⚠️ Hati-hati! Waktu pengembalian tinggal $remainingDays hari lagi.";
+                  } else if (remainingDays < 0) {
+                    warningMessage =
+                        "❌ Buku sudah melewati batas waktu pengembalian!";
+                  }
+
+                  return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    color: AppColors.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('📚 Judul: ${book['title'] ?? 'Tidak tersedia'}'),
+                          SizedBox(height: 8),
+                          Text('Tanggal Peminjaman: ${borrowDate.toLocal().toString().split(" ")[0]}'),
+                          Text('Tanggal Pengembalian: ${returnDate.toLocal().toString().split(" ")[0]}'),
+                          if (warningMessage.isNotEmpty) ...[
+                            SizedBox(height: 12),
+                            Text(warningMessage, style: TextStyle(color: Colors.red)),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+      )
     );
   }
 }

@@ -5,7 +5,7 @@ class ModelBuku {
   final String no_buku;
   final int jumlah;
   final String deskripsi;
-  final String? fotoBase64;
+  final String? foto;
 
   ModelBuku({
     required this.id,
@@ -14,7 +14,7 @@ class ModelBuku {
     required this.no_buku,
     required this.jumlah,
     required this.deskripsi,
-    this.fotoBase64,
+    this.foto,
   });
 
   factory ModelBuku.fromJson(Map<String, dynamic> json) {
@@ -25,7 +25,7 @@ class ModelBuku {
       no_buku: json['no_buku'] ?? '-',
       jumlah: json['jumlah'] ?? 0,
       deskripsi: json['deskripsi'] ?? '-',
-      fotoBase64: json['foto'], // ✅ GANTI INI dari 'cover' ke 'foto'
+      foto: json['foto'], // ✅ GANTI INI dari 'cover' ke 'foto'
     );
   }
 
@@ -36,7 +36,7 @@ class ModelBuku {
       'no_buku': no_buku,
       'jumlah': jumlah,
       'deskripsi': deskripsi,
-      'cover': fotoBase64,
+      'cover': foto,
     };
   }
 }

@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - Peminjaman Buku</title>
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="config.js"></script>
   <style>
@@ -149,18 +148,39 @@
       border-radius: 4px;
     }
 
-    button {
-  padding: 6px 12px;
-  border-radius: 8px;
-  background-color: #0057D9;
-  color: white;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-}
+        button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
 button:hover {
   background-color: #003f9e;
 }
+
+ #filterExport {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    #filterExport .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      color: black;
+      animation: slideUp 0.3s ease forwards;
+    }
 
   </style>
 </head>
@@ -171,15 +191,19 @@ button:hover {
     <li onclick="window.location.href='dashboard.html'">Dashboard</li>
     <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
     <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
-    <!-- <li onclick="window.location.href='laporan.html'">Laporan</li>
-    <li onclick="window.location.href='pengaturan.html'">Pengaturan</li> -->
     <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    <li onclick="window.location.href='absensi.html'">Halaman Absen</li>
   </ul>
   <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 
 <div class="main">
-  <h2>Form Peminjaman Buku (Admin)</h2>
+    <div style="margin: 20px 0;">
+      <button onclick="bukaFilterExport()">
+        📥 Export ke Excel
+      </button>
+    </div>
+    <h2>Form Peminjaman Buku (Admin)</h2>
   <div style="margin-bottom: 20px;">
     <strong>Statistik:</strong><br>
     📚 Buku Dipinjam: <span id="stat-dipinjam">0</span><br>
@@ -187,7 +211,6 @@ button:hover {
   </div>  
 
   <form id="pinjamForm">
-    <!-- 🔍 Scan barcode / QR Mahasiswa -->
     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
       <input type="text" id="scan_npm" 
              placeholder="Scan barcode mahasiswa..." 
@@ -198,12 +221,10 @@ button:hover {
     
     <div id="info_mhs" style="margin-bottom: 10px; font-weight: bold;"></div>
   
-    <!-- untuk menyimpan ID mahasiswa hasil scan -->
     <input type="hidden" id="id_mahasiswa" name="id_mahasiswa">
   
     <div id="qr-reader" style="width:300px; margin-bottom: 10px;"></div>
   
-    <!-- 📚 Pilih buku -->
     <label for="id_buku">Buku:</label>
     <select id="id_buku" required></select>
   
@@ -228,90 +249,167 @@ button:hover {
     </thead>
     <tbody></tbody>
   </table>
+  
+  <div id="filterExport">
+    <div class="modal-content">
+      <h3>Export Data Peminjaman</h3>
+      <label>Pilih Jangka Waktu:</label><br><br>
+      <select id="bulanFilter">
+        <option value="1">1 Bulan Terakhir</option>
+        <option value="3">3 Bulan Terakhir</option>
+        <option value="6">6 Bulan Terakhir</option>
+        <option value="12">12 Bulan Terakhir</option>
+      </select><br><br>
+      <button onclick="prosesExport()">Export</button>
+      <button onclick="tutupFilterExport()">Batal</button>
+    </div>
+  </div>
+
 
   <script>
-    const socket = io(API_URL);
-
-    function emitUpdateStatistik() {
-      socket.emit('update_statistik');
-    }
-
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tanggal_kembali').min = today;
 
     function updateStatistik() {
-      Promise.all([
-        fetch(`${API_URL}/jumlah-buku-dipinjam`).then(res => res.json()),
-        fetch(`${API_URL}/jumlah-peminjaman-aktif`).then(res => res.json())
-      ])
-      .then(([dipinjam, aktif]) => {
-        document.getElementById('stat-dipinjam').innerText = dipinjam.jumlah;
-        document.getElementById('stat-aktif').innerText = aktif.jumlah;
-      });
-    }
+  Promise.allSettled([
+    fetch(`${API_URL}/jumlah-buku-dipinjam`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      }),
+    fetch(`${API_URL}/jumlah-peminjaman-aktif`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+  ])
+  .then(results => {
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        const data = result.value;
+        if (typeof data.jumlah === 'number') {
+          if (index === 0) {
+            document.getElementById('stat-dipinjam').innerText = data.jumlah;
+          } else if (index === 1) {
+            document.getElementById('stat-aktif').innerText = data.jumlah;
+          }
+        } else {
+          console.warn('Data jumlah tidak valid:', data);
+        }
+      } else {
+        console.error(`Permintaan ke endpoint ke-${index + 1} gagal:`, result.reason);
+      }
+    });
+  });
+}
+
+
 
     function loadMahasiswa() {
-      fetch(`${API_URL}/users`)
-        .then(res => res.json())
-        .then(data => {
-          const select = document.getElementById('id_mahasiswa');
-          select.innerHTML = '';
-          data.forEach(m => {
-            const opt = document.createElement('option');
-            opt.value = m.id;
-            opt.textContent = m.nama;
-            select.appendChild(opt);
-          });
-        });
-    }
+  fetch(`${API_URL}/users`)
+    .then(res => res.json())
+    .then(data => {
+      console.log('Hasil fetch:', data); // tampilkan data
+      const select = document.getElementById('id_mahasiswa');
+      select.innerHTML = '';
 
-    function loadBuku() {
-      fetch(`${API_URL}/data_buku`)
-        .then(res => res.json())
-        .then(json => {
-          const data = json.data_buku;
-          const select = document.getElementById('id_buku');
-          select.innerHTML = '';
-          data.forEach(b => {
-            const opt = document.createElement('option');
-            opt.value = b.id;
-            opt.textContent = `${b.judul} (${b.jumlah} tersedia)`;
-            select.appendChild(opt);
-          });
+      if (Array.isArray(data.users)) {
+        data.users.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = m.nama;
+          select.appendChild(opt);
         });
-    }
+      } else {
+        console.error("Struktur data tidak dikenali:", data);
+      }
+    });
+}
+
+function loadBuku() {
+  fetch(`${API_URL}/data_buku`)
+    .then(res => {
+      console.log('Respon status:', res.status);  // Tambah ini
+      return res.json();
+    })
+    .then(json => {
+      console.log('Data dari /data_buku:', json);
+      const data = Array.isArray(json) ? json : json.data_buku || [];
+      const select = document.getElementById('id_buku');
+      select.innerHTML = '';
+      data.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.textContent = `${b.judul} (${b.jumlah} tersedia)`;
+        select.appendChild(opt);
+      });
+    })
+    .catch(err => {
+      console.error('Gagal ambil data buku:', err);  // Tambah ini
+    });
+}
+
+function formatTanggal(tanggal) {
+  const d = new Date(tanggal);
+  return d.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+}
 
     function loadPeminjamanAktif() {
-      fetch(`${API_URL}/peminjaman_aktif`)
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector('#tabelPeminjaman tbody');
-          tbody.innerHTML = '';
-          data.forEach(p => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${p.nama_mahasiswa}</td>
-              <td>${p.judul_buku}</td>
-              <td>${p.tanggal_pinjam}</td>
-              <td>${p.tanggal_kembali}</td>
-              <td>${p.status}</td>
-              <td><button onclick="kembalikan(${p.id})">Kembalikan</button></td>
-            `;
-            tbody.appendChild(tr);
-          });
-        });
-    }
+  fetch(`${API_URL}/peminjaman_aktif`)
+    .then(res => res.json())
+    .then(data => {
+      const peminjaman = data.data || []; // fallback jika data kosong
+      const tbody = document.querySelector('#tabelPeminjaman tbody');
+      tbody.innerHTML = '';
+      peminjaman.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.nama_mahasiswa}</td>
+          <td>${p.judul_buku}</td>
+          <td>${formatTanggal(p.tanggal_pinjam)}</td>
+          <td>${formatTanggal(p.tanggal_kembali)}</td>
+          <td>${p.status}</td>
+           <td>
+    ${p.status === 'dipinjam' 
+      ? `<button onclick="kembalikan(${p.id})">Kembalikan</button>` 
+      : ''}
+  </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error('Gagal memuat data peminjaman aktif:', err);
+    });
+}
 
-    function kembalikan(id) {
-      fetch(`${API_URL}/kembali/${id}`, { method: 'PUT' })
-        .then(res => res.json())
-        .then(() => {
-          loadBuku();
-          loadPeminjamanAktif();
-          updateStatistik();
-          emitUpdateStatistik();
-        });
-    }
+
+function kembalikan(id) {
+  fetch(`${API_URL}/kembali/${id}`, { method: 'PUT' })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Gagal mengembalikan buku");
+      }
+      return res.json();
+    })
+    .then(() => {
+      loadBuku();
+      loadPeminjamanAktif();
+      updateStatistik();
+    })
+    .catch(err => {
+      alert(err.message);
+    });
+}
+
 
     document.getElementById('pinjamForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -329,28 +427,19 @@ button:hover {
         loadBuku();
         loadPeminjamanAktif();
         updateStatistik();
-        emitUpdateStatistik();
         document.getElementById('pinjamForm').reset();
       });
     });
-
-    // ⛳ Load saat halaman dimuat
-    loadMahasiswa();
     loadBuku();
     loadPeminjamanAktif();
     updateStatistik();
 
-    socket.on('update_statistik', () => {
-      updateStatistik();
-    });
-
-    // 🔍 Handle Scan Barcode
     document.getElementById('scan_npm').addEventListener('keypress', async function(e) {
       if (e.key === 'Enter') {
         const scannedNPM = this.value.trim();
         const res = await fetch(`${API_URL}/users`);
         const data = await res.json();
-        const mhs = data.find(m => m.npm === scannedNPM);
+        const mhs = data.users.find(m => m.npm === scannedNPM);
         if (mhs) {
           document.getElementById('id_mahasiswa').value = mhs.id;
           alert(`✅ Mahasiswa ditemukan: ${mhs.nama}`);
@@ -361,7 +450,6 @@ button:hover {
       }
     });
 
-    // 📷 Handle QR Scanner
     function mulaiScanQR() {
       const qrReader = new Html5Qrcode("qr-reader");
 
@@ -388,10 +476,26 @@ button:hover {
         console.error("Gagal mulai kamera QR:", err);
       });
     }
+
   </script>
 </div>
 
-<script>
+  <script>
+    function bukaFilterExport() {
+      const modal = document.getElementById('filterExport');
+      modal.style.display = 'flex';
+    }
+
+    function tutupFilterExport() {
+      const modal = document.getElementById('filterExport');
+      modal.style.display = 'none';
+    }
+
+    function prosesExport() {
+      const bulan = document.getElementById('bulanFilter').value;
+      window.open('export_peminjaman_excel.php?bulan=' + bulan, '_blank');
+      tutupFilterExport();
+    }
 function logout() {
   alert("Anda telah logout.");
   window.location.href = "login.html";

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Absensi Perpustakaan</title>
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #89CFF0, #1E90FF);
+      height: 100vh;
+      display: flex;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      color: #fff;
+      animation: slideIn 0.8s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 20px 0;
+      cursor: pointer;
+      transition: 0.3s;
+      user-select: none;
+    }
+
+    .sidebar ul li:hover {
+      transform: translateX(5px);
+      font-weight: bold;
+    }
+
+    .logout-btn {
+      margin-top: 40px;
+      padding: 12px 24px;
+      background-color: #0057D9;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: #003f9e;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+      color: black;
+      animation: fadeIn 1s ease 0.5s both;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      padding: 20px 0;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .absen-box, .foto-box {
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      padding: 20px;
+      width: 600px;
+      min-height: 600px;
+      position: relative;
+    }
+
+    .absen-box label {
+      display: inline-block;
+      width: 120px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .absen-box span {
+      color: white;
+    }
+
+    .buku-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .buku-item {
+      width: 200px;
+      height: 250px;
+      font-size: 20px;
+      background: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .foto-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .foto-box .foto-preview {
+      width: 250px;
+      height: 300px;
+      background: #ccc;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      overflow: hidden;       /* ✅ supaya gambar tidak keluar */
+      position: relative;
+}
+    .circle-button {
+      margin-top: 30px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #f4a261;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu Admin</h2>
+    <ul>
+      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+      <li onclick="window.location.href='absensi.html'">Halaman Absen</li>
+    </ul>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+  <div class="main">
+    <h1>Absensi Perpustakaan</h1>
+    <div class="container">
+      <div class="absen-box">
+        <p><label>Nama</label>: <span id="nama">-</span></p>
+        <p><label>NPM</label>: <span id="npm">-</span></p>
+        <p><label>Tanggal</label>: <span id="tanggal">-</span></p>
+        <p><label>Tanggungan Buku</label>:</p>
+        <div class="buku-list" id="bukuList"></div>
+      </div>
+      <div class="foto-box">
+        <div class="foto-preview" id="fotoMhs">Foto</div>
+        <p>Foto Profil</p>
+      </div>
+    </div>
+    <button class="circle-button" onclick="bukaPopupQR()">&#128214;</button>
+    
+  </div>
+
+<!-- Modal Input NPM -->
+<div class="modal" id="popupQR" style="display:none;">
+  <div class="modal-content">
+    <h3>Scan / Masukkan NPM</h3>
+    <input type="text" id="inputNPM" placeholder="NPM" autofocus>
+    <br><br>
+    <button onclick="prosesNPM()">OK</button>
+  </div>
+</div>
+
+<script>
+  function bukaPopupQR() {
+    document.getElementById('popupQR').style.display = 'flex';
+    const input = document.getElementById('inputNPM');
+    input.value = '';  // Clear jika ada input sebelumnya
+    input.focus();
+
+    // ✅ Pastikan listener hanya dipasang sekali per buka popup
+    input.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        prosesNPM();
+      }
+    }, { once: true });
+  }
+
+  async function prosesNPM() {
+    const npm = document.getElementById('inputNPM').value.trim();
+    if (!npm) return;
+    document.getElementById('popupQR').style.display = 'none';
+
+    try {
+      // ✅ Ambil data user
+      const resUser = await fetch(`${API_URL}/users`);
+      const dataUser = await resUser.json();
+      const mhs = dataUser.users.find(u => u.npm === npm);
+
+      if (mhs) {
+        document.getElementById('nama').textContent = mhs.nama;
+        document.getElementById('npm').textContent = mhs.npm;
+        document.getElementById('tanggal').textContent = new Date().toLocaleDateString('id-ID');
+
+        // ✅ Ganti foto jika ada, tanpa background default
+const fotoMhs = document.getElementById('fotoMhs');
+
+// Versi fleksibel untuk deteksi jenis foto
+let fotoURL = 'default-foto.png';
+
+if (mhs.foto) {
+  if (mhs.foto.startsWith('http') || mhs.foto.startsWith('data:image')) {
+    fotoURL = mhs.foto;
+  } else {
+    fotoURL = `${API_URL}/uploads/${mhs.foto}`;
+  }
+}
+
+fotoMhs.innerHTML = `
+  <img src="${fotoURL}"
+       onerror="if (!this.dataset.fallback) { this.dataset.fallback = true; this.src='default-foto.png'; }"
+       style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: center;" />
+`;
+
+// ✅ Ambil data buku
+const resBuku = await fetch(`${API_URL}/peminjaman_user/${npm}`);
+const dataBuku = await resBuku.json();
+console.log(dataBuku);
+const row = document.getElementById('bukuList');
+row.innerHTML = '';
+
+if (Array.isArray(dataBuku) && dataBuku.length > 0) {
+  dataBuku.forEach(b => {
+  const coverPath = b.foto ? `${API_URL}${b.foto}` : 'default.jpg';
+  console.log('COVER:', b.cover);
+  console.log('Data:', b);
+
+
+  row.innerHTML += `
+    <div class="buku-item" style="flex-direction: column; justify-content: space-between; padding: 5px;">
+      <img src="${coverPath}" 
+           onerror="this.onerror=null; this.src='default.jpg';"
+           style="width: 100%; height: 200px; object-fit: cover; border-radius: 6px;" />
+      <div style="font-size: 14px; font-weight: bold; text-align: center; margin-top: 6px; color: #333;">
+        ${b.status === 'dipinjam' ? 'Sedang Dipinjam' : 'Sudah Dikembalikan'}
+      </div>
+    </div>`;
+});
+
+} else {
+  row.innerHTML = `
+    <div class="buku-item">
+      Buku terakhir dikembalikan
+    </div>`;
+}
+
+      } else {
+        alert("❌ NPM tidak ditemukan!");
+      }
+    } catch (error) {
+      console.error('Gagal memproses NPM:', error);
+      alert("Terjadi kesalahan saat mengambil data.");
+    }
+  }
+
+  function logout() {
+    alert("Anda telah logout.");
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

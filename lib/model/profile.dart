@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../penting/constants.dart';
+import '../../penting/constants.dart';
 import 'package:perpustakaan/controller/colors.dart';
 
 class ProfilePage extends StatefulWidget {

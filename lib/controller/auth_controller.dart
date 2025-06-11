@@ -49,13 +49,21 @@ class AuthController extends GetxController {
           print("🚀 Navigasi ke HomePage");
           Get.offAll(() => HomePage(
                 name: user['nama'],
-                email: user['email'],
+                email: user['email'], 
                 foto: user['foto'],
                 alamat: user['alamat'],
                 noTelp: user['noTelp'],
                 npm: user['npm'],
               ));
+
+          Get.snackbar('Login Berhasil', 'Selamat datang, ${user['nama']}!',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green,
+              colorText: Colors.white);
+           print('🪪 NPM dari user: ${user['npm']}');
+
         }
+        
       } else {
         final errorMessage = data['error'] ?? 'Email atau password salah';
         print("❌ Gagal Login: $errorMessage");

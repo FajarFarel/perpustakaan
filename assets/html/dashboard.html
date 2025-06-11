@@ -110,18 +110,17 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Menu Admin</h2>
-    <ul>
-      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
-      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
-      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
-      <!-- <li onclick="window.location.href='laporan.html'">Laporan</li>
-      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li> -->
-      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
-    </ul>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </div>
+<div class="sidebar">
+  <h2>Menu Admin</h2>
+  <ul>
+    <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+    <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+    <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+    <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    <li onclick="window.location.href='absensi.html'">Halaman Absen</li>
+  </ul>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
 
   <div class="main">
     <h1>Selamat Datang di Dashboard Admin</h1>
@@ -138,10 +137,10 @@
         <h3>Peminjaman Buku</h3>
         <p>Kelola peminjaman buku</p>
       </div>
-      <!-- <div class="card">
-        <h3>Pengaturan</h3>
-        <p>Atur sistem dan preferensi</p>
-      </div> -->
+      <div class="card" onclick="window.location.href='absensi.html'">
+          <h3>Halaman Absen</h3>
+          <p>Kelola Absensi</p>
+      </div>
     </div>
   </div>
 

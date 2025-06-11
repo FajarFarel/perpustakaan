@@ -50,25 +50,27 @@ void setupSocket() {
 
   // Duplicate initState method removed
 
-  Future<void> fetchUsers() async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl/users'));
+Future<void> fetchUsers() async {
+  try {
+    final response = await http.get(Uri.parse('$baseUrl/users'));
 
-      if (response.statusCode == 200) {
-        var decodedData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
 
-        if (decodedData is List) {
-          users.value = decodedData;
-        } else if (decodedData is Map && decodedData.containsKey('data')) {
-          users.value = decodedData['data'];
-        }
+      if (decodedData is List) {
+        users.value = decodedData;
+      } else if (decodedData is Map && decodedData.containsKey('users')) {
+        users.value = decodedData['users'];
       } else {
-        print("❌ Gagal ambil data pengguna: ${response.statusCode}");
+        throw Exception("Format data tidak sesuai");
       }
-    } catch (e) {
-      print("❌ Error fetch users: $e");
+    } else {
+      print("❌ Gagal ambil data pengguna: ${response.statusCode}");
     }
+  } catch (e) {
+    print("❌ Error fetch users: $e");
   }
+}
 
   Future<void> fetchStatistik() async {
     try {
@@ -106,9 +108,9 @@ void setupSocket() {
                 shrinkWrap: true,
                 children: [
                   Obx(() => _buildStatCard("Total Pengguna", "${users.length}", Icons.people)),
-                  Obx(() => _buildStatCard("Buku Dipinjam", "${jumlahBukuDipinjam.value}", Icons.book)),
-                  Obx(() => _buildStatCard("Buku Tersedia", "${bookController.dataBuku.length}", Icons.library_books)),
                   Obx(() => _buildStatCard("Peminjaman Aktif", "${jumlahPeminjamanAktif.value}", Icons.assignment)),
+                  Obx(() => _buildStatCard("Buku Tersedia", "${bookController.dataBuku.length}", Icons.library_books)),
+                  Obx(() => _buildStatCard("Buku Dipinjam", "${jumlahBukuDipinjam.value}", Icons.book)),               
                 ],
               ),
             ),

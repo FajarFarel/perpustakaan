@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:perpustakaan/penting/about.dart';
 import 'package:perpustakaan/main.dart';
@@ -6,11 +7,12 @@ import 'package:perpustakaan/model/rent.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
-import '../controller/book_controller.dart';
-import '../model/book_model.dart';
+import 'package:perpustakaan/controller/book_controller.dart';
+import 'book_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:perpustakaan/model/pengaturan_page.dart';
 import 'package:perpustakaan/controller/colors.dart';
+import 'package:perpustakaan/penting/constants.dart';
 
 class HomePage extends StatefulWidget {
   final String name;
@@ -45,12 +47,24 @@ class HomePageState extends State<HomePage>
   late String imageUrl;
   bool _isLoading = true;
 
+  late Map<String, dynamic> userData;
+
   @override
   void initState() {
     super.initState();
     imageUrl = widget.foto != null && widget.foto!.isNotEmpty
         ? widget.foto!
         : "assets/default_image.png";
+
+    // Initialize userData with widget values
+    userData = {
+      'nama': widget.name,
+      'email': widget.email,
+      'foto': widget.foto ?? '',
+      'alamat': widget.alamat,
+      'noTelp': widget.noTelp,
+      'npm': widget.npm,
+    };
 
     bookController.fetchDataBuku().then((_) {
       setState(() {
@@ -69,6 +83,49 @@ class HomePageState extends State<HomePage>
     );
   }
 
+  Widget tampilkanFoto(String? foto, {double size = 80}) {
+    if (foto == null || foto.isEmpty) {
+      print('[tampilkanFoto] Foto kosong atau null.');
+      return Icon(Icons.account_circle, size: size, color: Colors.white);
+    }
+
+    if (!foto.startsWith('http')) {
+      // Cek dan hapus prefix jika ada
+      if (foto.contains(',')) {
+        foto = foto.split(',').last;
+      }
+      try {
+        final decoded = base64Decode(foto);
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(size / 2),
+          child: Image.memory(
+            decoded,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+          ),
+        );
+      } catch (e) {
+        print('Error decoding base64: $e');
+        return Icon(Icons.broken_image, size: size);
+      }
+    }
+
+    // Jika foto adalah url http/https, tampilkan sebagai NetworkImage
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(size / 2),
+      child: Image.network(
+        foto,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(Icons.broken_image, size: size);
+        },
+      ),
+    );
+  }
+
   void _showBookDetails(BuildContext context, Map<String, dynamic> book) {
     showDialog(
       context: context,
@@ -83,8 +140,8 @@ class HomePageState extends State<HomePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               book['cover'] != null && book['cover'].toString().isNotEmpty
-                  ? Image.memory(
-                      base64Decode(book['cover'].split(',').last),
+                  ? Image.network(
+                      '$baseUrl/uploads/buku/${book['cover']}',
                       height: 150,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
@@ -158,7 +215,7 @@ class HomePageState extends State<HomePage>
                             'author': book.penulis,
                             'no_buku': book.no_buku,
                             'stock': book.jumlah,
-                            'cover': book.fotoBase64,
+                            'cover': book.foto,
                             'description': book.deskripsi,
                           }),
                           child: Card(
@@ -171,14 +228,22 @@ class HomePageState extends State<HomePage>
                                 ClipRRect(
                                   borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(12.0)),
-                                  child: book.fotoBase64 != null &&
-                                          book.fotoBase64!.isNotEmpty
-                                      ? Image.memory(
-                                          base64Decode(
-                                              book.fotoBase64!.split(',').last),
+                                  child: (book.foto != null &&
+                                          book.foto!.isNotEmpty)
+                                      ? Image.network(
+                                          '$baseUrl/uploads/buku/${book.foto}',
                                           height: 150,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Image.asset(
+                                              "assets/placeholder.jpg",
+                                              height: 150,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            );
+                                          },
                                         )
                                       : Image.asset(
                                           "assets/placeholder.jpg",
@@ -291,15 +356,25 @@ class HomePageState extends State<HomePage>
               decoration: BoxDecoration(
                 color: AppColors.secondary,
               ),
-              accountName: Text(widget.name, style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w400)),
-              accountEmail: Text(widget.email, style: TextStyle(color: AppColors.textSecondary)),
+              accountName: Text(widget.name,
+                  style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w400)),
+              accountEmail: Text(widget.email,
+                  style: TextStyle(color: AppColors.textSecondary)),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: widget.foto != null && widget.foto!.isNotEmpty
-                    ? NetworkImage(imageUrl)
-                    : const AssetImage("assets/default.jpg") as ImageProvider,
-                onBackgroundImageError: (exception, stackTrace) {
-                  print("Gagal memuat gambar: $exception");
-                },
+                backgroundColor: Colors.white,
+                child: Builder(
+                  builder: (_) {
+                    try {
+                      return tampilkanFoto(userData['foto'], size: 80);
+                    } catch (e, stackTrace) {
+                      print('Error saat menampilkan foto: $e');
+                      print(stackTrace);
+                      return Icon(Icons.error, color: Colors.red);
+                    }
+                  },
+                ),
               ),
             ),
             ListTile(
@@ -398,22 +473,6 @@ class HomePageState extends State<HomePage>
                             }
                           },
                           child: Text('Instagram Admin'),
-                        ),
-                        SimpleDialogOption(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            final emailUri = Uri.parse(
-                                'mailto:farelparjo@gmail.com?subject=Butuh%20Bantuan&body=Halo%20Admin%2C%20saya%20ingin%20bertanya...');
-                            if (await canLaunchUrl(emailUri)) {
-                              await launchUrl(
-                                emailUri,
-                                mode: LaunchMode.externalApplication,
-                              );
-                            } else {
-                              throw 'Tidak bisa membuka aplikasi email';
-                            }
-                          },
-                          child: Text('Email Admin'),
                         ),
                       ],
                     );

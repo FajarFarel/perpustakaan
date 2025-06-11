@@ -136,21 +136,25 @@
       transform: scale(1.05);
       filter: brightness(1.1);
     }
+    .action-btn.hapus {
+  background-color: #6c757d; /* abu-abu */
+  color: white;
+}
+
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Menu Admin</h2>
-    <ul>
-      <li onclick="window.location.href='dashboard.html'">Dashboard</li>
-      <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
-      <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
-      <!-- <li onclick="window.location.href='laporan.html'">Laporan</li>
-      <li onclick="window.location.href='pengaturan.html'">Pengaturan</li> -->
-      <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
-    </ul>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </div>
+<div class="sidebar">
+  <h2>Menu Admin</h2>
+  <ul>
+    <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+    <li onclick="window.location.href='buku.html'">Manajemen Buku</li>
+    <li onclick="window.location.href='admin.html#pengguna'">Daftar Pengguna</li>
+    <li onclick="window.location.href='pinjam.html'">Peminjaman Buku</li>
+    <li onclick="window.location.href='absensi.html'">Halaman Absen</li>
+  </ul>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
 
   <div class="main">
     <h1>Selamat Datang, Admin!</h1>
@@ -188,9 +192,10 @@ oninput="filterPengguna()">
     fetch(`${API_URL}/users`)
       .then(res => res.json())
       .then(data => {
-        semuaPengguna = data || []; // fallback kalau undefined
-        tampilkanPengguna(semuaPengguna);
-      })
+  semuaPengguna = data.users || []; // ✅ ambil array di dalam key 'users'
+  tampilkanPengguna(semuaPengguna);
+})
+
       .catch(err => {
         console.error("Gagal mengambil data:", err);
       });
@@ -214,20 +219,22 @@ oninput="filterPengguna()">
           <td>${user.email}</td>
           <td>${user.alamat}</td>
           <td>${user.status}</td>
-          <td>
-            <button class="action-btn aktif" onclick="ubahStatus(${user.id}, 'aktif')">Aktifkan</button>
-            <button class="action-btn blokir" onclick="ubahStatus(${user.id}, 'blokir')">Blokir</button>
-            <button class="action-btn suspend" onclick="suspendUser(${user.id}, 1)">1 Hari</button>
-            <button class="action-btn suspend" onclick="suspendUser(${user.id}, 3)">3 Hari</button>
-            <button class="action-btn suspend" onclick="suspendUser(${user.id}, 7)">7 Hari</button>
-          </td>
+<td>
+  <button class="action-btn aktif" onclick="ubahStatus(${user.id}, 'aktif')">Aktifkan</button>
+  <button class="action-btn blokir" onclick="ubahStatus(${user.id}, 'blokir')">Blokir</button>
+  <button class="action-btn suspend" onclick="suspendUser(${user.id}, 1)">1 Hari</button>
+  <button class="action-btn suspend" onclick="suspendUser(${user.id}, 3)">3 Hari</button>
+  <button class="action-btn suspend" onclick="suspendUser(${user.id}, 7)">7 Hari</button>
+  <button class="action-btn hapus" onclick="hapusUser(${user.id})">Hapus</button>
+</td>
+
         `;
         tbody.appendChild(row);
       });
     }
   
     function ubahStatus(id, statusBaru) {
-      fetch(`${API_URL}/update_status`, {
+      fetch(`${API_URL}/backend/update_status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, status: statusBaru })
@@ -240,7 +247,7 @@ oninput="filterPengguna()">
     }
   
     function suspendUser(id, durationHari) {
-      fetch(`${API_URL}/update_status`, {
+      fetch(`${API_URL}/backend/update_status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, status: "suspend", duration: durationHari })
@@ -251,6 +258,26 @@ oninput="filterPengguna()">
         location.reload();
       });
     }
+    
+    function hapusUser(id) {
+  if (!confirm("Yakin ingin menghapus pengguna ini?")) return;
+
+  fetch(`${API_URL}/hapus_user`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    location.reload();
+  })
+  .catch(err => {
+    console.error("Gagal menghapus:", err);
+    alert("Terjadi kesalahan saat menghapus pengguna.");
+  });
+}
+
   
     function filterPengguna() {
       const query = document.getElementById("search-input").value.trim().toLowerCase();
