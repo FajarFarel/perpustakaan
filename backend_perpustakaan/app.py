@@ -661,29 +661,61 @@ def update_peminjaman(id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 @app.route('/peminjaman_user/<npm>', methods=['GET'])
 def get_peminjaman_user(npm):
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        query = """
-        SELECT pb.status, db.foto
+        # Cek apakah ada buku yang sedang dipinjam
+        query_dipinjam = """
+        SELECT 
+            db.judul AS title,
+            db.no_buku AS isbn,
+            pb.tanggal_pinjam AS borrowDate,
+            pb.tanggal_kembali AS returnDate,
+            db.foto AS cover,
+            pb.status
         FROM peminjaman_buku pb
         JOIN mahasiswa mhs ON pb.id_mahasiswa = mhs.id
         JOIN data_buku db ON pb.id_buku = db.id
-        WHERE mhs.npm = %s
-        ORDER BY pb.id DESC
-        LIMIT 5
+        WHERE mhs.npm = %s AND pb.status = 'dipinjam'
+        ORDER BY pb.tanggal_pinjam DESC
         """
-        cursor.execute(query, (npm,))
-        data = cursor.fetchall()
+        cursor.execute(query_dipinjam, (npm,))
+        data_dipinjam = cursor.fetchall()
 
-        for row in data:
-            row['foto'] = f"/uploads/buku/{row['foto']}" if row.get('foto') else None
+        if data_dipinjam:
+            data = data_dipinjam
+        else:
+            # Kalau tidak ada buku dipinjam, ambil 1 buku terakhir yang sudah dikembalikan
+            query_kembali = """
+            SELECT 
+                db.judul AS title,
+                db.no_buku AS isbn,
+                pb.tanggal_pinjam AS borrowDate,
+                pb.tanggal_kembali AS returnDate,
+                db.foto AS cover,
+                pb.status
+            FROM peminjaman_buku pb
+            JOIN mahasiswa mhs ON pb.id_mahasiswa = mhs.id
+            JOIN data_buku db ON pb.id_buku = db.id
+            WHERE mhs.npm = %s AND pb.status = 'dikembalikan'
+            ORDER BY pb.tanggal_kembali DESC
+            LIMIT 1
+            """
+            cursor.execute(query_kembali, (npm,))
+            data = cursor.fetchall()
+
+        # Format tanggal dan cover
+        for item in data:
+            item['borrowDate'] = item['borrowDate'].isoformat() if item['borrowDate'] else None
+            item['returnDate'] = item['returnDate'].isoformat() if item['returnDate'] else None
+            if item['cover']:
+                item['cover'] = f"{request.host_url}uploads/buku/{item['cover']}"
 
         return jsonify(data)
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:

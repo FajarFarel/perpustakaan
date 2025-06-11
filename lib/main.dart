@@ -469,7 +469,7 @@ class _LoginPageState extends State<LoginPage> {
 
       setState(() {
         _currentSSID = ssid;
-        _isWifiBenar = ssid == "Farel";
+        _isWifiBenar = ssid == "$wifi";
       });
     } else {
       setState(() {
@@ -522,7 +522,7 @@ class _LoginPageState extends State<LoginPage> {
     String? ssid = await info.getWifiName();
     ssid = ssid?.replaceAll('"', '');
 
-    if (ssid == "Farel") {
+    if (ssid == "$wifi") {
       print("📶 Terhubung ke Wi-Fi yang diizinkan: $ssid");
       AuthController().loginUser(context, email, password);
     } else {

@@ -234,7 +234,7 @@ oninput="filterPengguna()">
     }
   
     function ubahStatus(id, statusBaru) {
-      fetch(`${API_URL}/backend/update_status`, {
+      fetch(`${API_URL}/update_status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, status: statusBaru })
@@ -247,7 +247,7 @@ oninput="filterPengguna()">
     }
   
     function suspendUser(id, durationHari) {
-      fetch(`${API_URL}/backend/update_status`, {
+      fetch(`${API_URL}/update_status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, status: "suspend", duration: durationHari })
