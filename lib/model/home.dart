@@ -46,12 +46,14 @@ class HomePageState extends State<HomePage>
   late List<ModelBuku> _filteredBooks = [];
   late String imageUrl;
   bool _isLoading = true;
+  final BookController controller = Get.put(BookController());
 
   late Map<String, dynamic> userData;
 
   @override
   void initState() {
     super.initState();
+    controller.fetchDataBuku();
     imageUrl = widget.foto != null && widget.foto!.isNotEmpty
         ? widget.foto!
         : "assets/default_image.png";
@@ -298,7 +300,7 @@ class HomePageState extends State<HomePage>
           duration: Duration(milliseconds: 1000),
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
-            color: Color.fromRGBO(2, 163, 163, 100),
+            color: AppColors.secondary,
             borderRadius:
                 _isSearching ? BorderRadius.circular(0) : BorderRadius.zero,
           ),
@@ -362,38 +364,58 @@ class HomePageState extends State<HomePage>
                       fontWeight: FontWeight.w400)),
               accountEmail: Text(widget.email,
                   style: TextStyle(color: AppColors.textSecondary)),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Builder(
-                  builder: (_) {
-                    try {
-                      return tampilkanFoto(userData['foto'], size: 80);
-                    } catch (e, stackTrace) {
-                      print('Error saat menampilkan foto: $e');
-                      print(stackTrace);
-                      return Icon(Icons.error, color: Colors.red);
-                    }
-                  },
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomePage(
-                    name: widget.name,
-                    email: widget.email,
-                    foto: widget.foto,
-                    alamat: widget.alamat,
-                    noTelp: widget.noTelp,
-                    npm: widget.npm,
+              currentAccountPicture: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      contentPadding: EdgeInsets.zero,
+                      content: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          '${userData['foto']}',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset('assets/default.jpg');
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Builder(
+                    builder: (_) {
+                      try {
+                        return tampilkanFoto(userData['foto'], size: 80);
+                      } catch (e, stackTrace) {
+                        print('Error saat menampilkan foto: $e');
+                        print(stackTrace);
+                        return Icon(Icons.error, color: Colors.red);
+                      }
+                    },
                   ),
                 ),
               ),
             ),
+            // ListTile(
+            //   leading: Icon(Icons.home),
+            //   title: Text('Home'),
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => HomePage(
+            //         name: widget.name,
+            //         email: widget.email,
+            //         foto: widget.foto,
+            //         alamat: widget.alamat,
+            //         noTelp: widget.noTelp,
+            //         npm: widget.npm,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             ListTile(
               leading: Icon(Icons.library_books),
               title: Text('Rent Books'),

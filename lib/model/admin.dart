@@ -109,7 +109,7 @@ Future<void> fetchUsers() async {
                 children: [
                   Obx(() => _buildStatCard("Total Pengguna", "${users.length}", Icons.people)),
                   Obx(() => _buildStatCard("Peminjaman Aktif", "${jumlahPeminjamanAktif.value}", Icons.assignment)),
-                  Obx(() => _buildStatCard("Buku Tersedia", "${bookController.dataBuku.length}", Icons.library_books)),
+                  Obx(() => _buildStatCard("Total Buku", "${bookController.dataBuku.length}", Icons.library_books)),
                   Obx(() => _buildStatCard("Buku Dipinjam", "${jumlahBukuDipinjam.value}", Icons.book)),               
                 ],
               ),

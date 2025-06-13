@@ -528,12 +528,12 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       print("🚫 Terhubung ke Wi-Fi lain: $ssid");
       _showErrorDialog(
-          'Silakan hubungkan perangkat ke Wi-Fi "Farel" untuk melanjutkan login.');
+          'Silakan hubungkan perangkat ke Wi-Fi "$wifi" untuk melanjutkan login.');
     }
   } else {
     print("❌ Tidak terhubung ke Wi-Fi mana pun");
     _showErrorDialog(
-        'Kamu tidak tersambung ke jaringan Wi-Fi mana pun. Silakan hubungkan ke Wi-Fi "Farel".');
+        'Kamu tidak tersambung ke jaringan Wi-Fi mana pun. Silakan hubungkan ke Wi-Fi "$wifi".');
   }
 }
 

@@ -84,7 +84,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
         await prefs.setString('user', responseBody);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('✅ Profil berhasil diperbarui')),
+          SnackBar(content: Text('✅ Profil berhasil diperbarui, harap login ulang')),
         );
         Navigator.pop(context);
       } else {
