@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:perpustakaan/controller/colors.dart';
+import 'package:perpustakaan/core/colors.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});

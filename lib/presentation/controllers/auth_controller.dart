@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:perpustakaan/model/admin.dart';
-import 'package:perpustakaan/model/home.dart';
+import 'package:perpustakaan/presentation/pages/admin.dart';
+import 'package:perpustakaan/presentation/pages/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../penting/constants.dart';
+import '../../core/constants.dart';
 
 class AuthController extends GetxController {
   var userRole = ''.obs;

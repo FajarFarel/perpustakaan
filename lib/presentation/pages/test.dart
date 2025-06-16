@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:perpustakaan/controller/colors.dart';
+import 'package:perpustakaan/core/colors.dart';
 
 class nyoba extends StatefulWidget {
   const nyoba({super.key});

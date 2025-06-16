@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:perpustakaan/controller/book_controller.dart';
+import 'package:perpustakaan/presentation/controllers/book_controller.dart';
 import 'package:perpustakaan/main.dart'; // Ganti jika LoginPage di tempat lain
-import 'package:perpustakaan/penting/constants.dart';
+import 'package:perpustakaan/core/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AdminHomePage extends StatefulWidget {

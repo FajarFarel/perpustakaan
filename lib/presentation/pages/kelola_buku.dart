@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:perpustakaan/controller/book_controller.dart';
-import 'package:perpustakaan/model/book_model.dart';
-import 'package:perpustakaan/penting/constants.dart'; 
+import 'package:perpustakaan/presentation/controllers/book_controller.dart';
+import 'package:perpustakaan/data/models/book_model.dart';
+import 'package:perpustakaan/core/constants.dart'; 
 
 class KelolaBuku extends StatefulWidget {
   const KelolaBuku({super.key});

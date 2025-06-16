@@ -1,18 +1,18 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:perpustakaan/penting/about.dart';
+import 'package:perpustakaan/presentation/sections/about.dart';
 import 'package:perpustakaan/main.dart';
-import 'package:perpustakaan/model/profile.dart';
-import 'package:perpustakaan/model/rent.dart';
+import 'package:perpustakaan/presentation/pages/profile.dart';
+import 'package:perpustakaan/presentation/pages/rent.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
-import 'package:perpustakaan/controller/book_controller.dart';
-import 'book_model.dart';
+import 'package:perpustakaan/presentation/controllers/book_controller.dart';
+import '../../data/models/book_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:perpustakaan/model/pengaturan_page.dart';
-import 'package:perpustakaan/controller/colors.dart';
-import 'package:perpustakaan/penting/constants.dart';
+import 'package:perpustakaan/presentation/pages/pengaturan_page.dart';
+import 'package:perpustakaan/core/colors.dart';
+import 'package:perpustakaan/core/constants.dart';
 
 class HomePage extends StatefulWidget {
   final String name;

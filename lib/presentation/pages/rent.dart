@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:perpustakaan/penting/constants.dart';
+import 'package:perpustakaan/core/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:perpustakaan/controller/colors.dart';
+import 'package:perpustakaan/core/colors.dart';
 
 class BookScreen extends StatefulWidget {
   const BookScreen({Key? key}) : super(key: key);

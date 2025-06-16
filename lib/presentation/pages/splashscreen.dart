@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:perpustakaan/main.dart';
-import 'package:perpustakaan/model/admin.dart';
-import 'package:perpustakaan/model/home.dart';
+import 'package:perpustakaan/presentation/pages/admin.dart';
+import 'package:perpustakaan/presentation/pages/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
