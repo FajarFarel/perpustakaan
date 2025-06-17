@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage>
         ? widget.foto!
         : "assets/default_image.png";
 
-    // Initialize userData with widget values
+
     userData = {
       'nama': widget.name,
       'email': widget.email,
@@ -92,7 +92,6 @@ class HomePageState extends State<HomePage>
     }
 
     if (!foto.startsWith('http')) {
-      // Cek dan hapus prefix jika ada
       if (foto.contains(',')) {
         foto = foto.split(',').last;
       }
@@ -112,8 +111,7 @@ class HomePageState extends State<HomePage>
         return Icon(Icons.broken_image, size: size);
       }
     }
-
-    // Jika foto adalah url http/https, tampilkan sebagai NetworkImage
+    
     return ClipRRect(
       borderRadius: BorderRadius.circular(size / 2),
       child: Image.network(
@@ -217,7 +215,7 @@ class HomePageState extends State<HomePage>
                             'author': book.penulis,
                             'no_buku': book.no_buku,
                             'stock': book.jumlah,
-                            'cover': book.foto,
+                            'cover': book.foto, 
                             'description': book.deskripsi,
                           }),
                           child: Card(
@@ -399,23 +397,6 @@ class HomePageState extends State<HomePage>
                 ),
               ),
             ),
-            // ListTile(
-            //   leading: Icon(Icons.home),
-            //   title: Text('Home'),
-            //   onTap: () => Navigator.pushReplacement(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => HomePage(
-            //         name: widget.name,
-            //         email: widget.email,
-            //         foto: widget.foto,
-            //         alamat: widget.alamat,
-            //         noTelp: widget.noTelp,
-            //         npm: widget.npm,
-            //       ),
-            //     ),
-            //   ),
-            // ),
             ListTile(
               leading: Icon(Icons.library_books),
               title: Text('Rent Books'),

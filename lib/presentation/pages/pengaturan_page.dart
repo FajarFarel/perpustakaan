@@ -175,9 +175,9 @@ class _PengaturanPageState extends State<PengaturanPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1), // Bayangan tipis
-                        blurRadius: 8, // seberapa lembut bayangannya
-                        offset: Offset(0, 4), // posisi: horizontal, vertical
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: Offset(0, 4), 
                       ),
                     ],
                   ),
@@ -186,7 +186,6 @@ class _PengaturanPageState extends State<PengaturanPage> {
                     child: Column(
                       children: [
                         _buildInputField("Nama", namaController),
-                        // _buildInputField("Email", emailController),
                         _buildInputField("Alamat", alamatController),
                         _buildInputField("No. Telepon", noTelpController),
                         _buildInputField("Password Lama", oldPasswordController,

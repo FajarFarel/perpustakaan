@@ -27,7 +27,7 @@ class AboutPage extends StatelessWidget {
           ),
           backgroundColor: AppColors.secondary,
           iconTheme: const IconThemeData(
-            color: AppColors.textPrimary, // Change the color of the back button
+            color: AppColors.textPrimary,
           ),
         ),
         body: Padding(

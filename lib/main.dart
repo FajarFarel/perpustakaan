@@ -11,7 +11,6 @@ import 'presentation/pages/admin.dart';
 import 'presentation/pages/kelola_pengguna.dart';
 import 'presentation/pages/kelola_buku.dart';
 import 'presentation/sections/pengaturan.dart';
-import 'presentation/sections/laporan.dart';
 import 'package:perpustakaan/core/colors.dart';
 import 'package:perpustakaan/core/constants.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -38,7 +37,7 @@ Future<void> registerUserWithImage(
   request.fields['noTelp'] = noTelp;
   request.fields['email'] = email;
   request.fields['password'] = password;
-  request.fields['role'] = 'user'; // role otomatis user
+  request.fields['role'] = 'user';
 
   request.files.add(await http.MultipartFile.fromPath('gambar', foto.path));
 
@@ -64,7 +63,6 @@ Future<void> registerUserWithImage(
         );
       });
     } else {
-      // Tampilkan error dari backend
       String errorMsg = responseData['error'] ?? 'Gagal melakukan registrasi';
       print("❌ Gagal Register: $errorMsg");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,23 +85,18 @@ class PentagonClipper extends CustomClipper<Path> {
     double centerX = size.width / 2;
     double centerY = size.height / 2;
     double radius = size.width / 1;
+    double angle = 72;
 
-    double angle = 72; // Angle between points
-
-    // Start from the top middle point
     path.moveTo(centerX, centerY - radius);
 
-    // Create the 5 corners of the pentagon
     for (int i = 1; i < 5; i++) {
       path.lineTo(
         centerX +
-            radius * cos((angle * i - 90) * pi / 180), // Adjust for rotation
+            radius * cos((angle * i - 90) * pi / 180),
         centerY + radius * sin((angle * i - 90) * pi / 180),
       );
     }
-
-    path.close(); // Close the path to form the pentagon
-
+    path.close();
     return path;
   }
 
@@ -129,14 +122,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _noTelpController = TextEditingController();
   File? _image;
   bool _obscurePassword = true;
-  // bool _isDarkMode = false;
-
-  // void _toggleDarkMode() {
-  //   setState(() {
-  //     _isDarkMode = !_isDarkMode;
-  //   });
-  // }
-
   final ImagePicker _picker = ImagePicker();
 
   void _showErrorDialog(String message) {
@@ -164,9 +149,9 @@ class _RegisterPageState extends State<RegisterPage> {
       final pickedFile = await _picker.pickImage(
         source: source,
         imageQuality:
-            100, // 100 = original, 85 = kompres ringan tapi masih tajam
+            100,
         maxWidth:
-            600, // Resize lebar maksimal agar tidak terlalu besar (ideal buat web)
+            600,
       );
       if (pickedFile != null) {
         setState(() {
@@ -203,11 +188,9 @@ class _RegisterPageState extends State<RegisterPage> {
       _showErrorDialog(
           'Password must be up to 8 digits long and contain only numbers');
     } else {
-      // ✅ Kirim data ke backend
       await registerUserWithImage(
           context, name, alamat, npm, noTelp, email, password, _image!);
 
-      // ✅ Tampilkan notifikasi & pindah ke halaman login
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('Registration successful! Redirecting to login...')),
@@ -254,8 +237,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                // color:
-                                //     _isDarkMode ? Colors.white : Colors.black,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -465,7 +446,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (connectivityResult == ConnectivityResult.wifi) {
       String? ssid = await info.getWifiName();
-      ssid = ssid?.replaceAll('"', ''); // bersihkan tanda kutip jika ada
+      ssid = ssid?.replaceAll('"', '');
 
       setState(() {
         _currentSSID = ssid;
@@ -504,7 +485,6 @@ class _LoginPageState extends State<LoginPage> {
   final email = _emailController.text.trim();
   final password = _passwordController.text.trim();
 
-  // Validasi email & password dulu
   if (!email.endsWith('@gmail.com')) {
     _showErrorDialog('Email harus berakhiran @gmail.com');
     return;
@@ -514,7 +494,6 @@ class _LoginPageState extends State<LoginPage> {
     return;
   }
 
-  // Cek koneksi Wi-Fi
   final connectivity = await Connectivity().checkConnectivity();
   final info = NetworkInfo();
 
@@ -548,7 +527,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Stack(
         children: [
-         // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -568,7 +546,6 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Title
                     Text(
                       'Selamat Datang di Perpustakaan Fakultas Kedokteran',
                       style: TextStyle(
@@ -578,7 +555,6 @@ class _LoginPageState extends State<LoginPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
-                    // Logo
                     ClipPath(
                       clipper: PentagonClipper(),
                       child: Image.asset(
@@ -589,7 +565,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Input Fields
                     Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
@@ -636,7 +611,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          // Login Button
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue[800],
@@ -651,7 +625,6 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(color: Colors.white)),
                           ),
                           const SizedBox(height: 10),
-                          // Register Button
                           TextButton(
                             onPressed: () {
                               Navigator.push(
@@ -695,7 +668,6 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/kelolaPengguna', page: () => KelolaPengguna()),
           GetPage(name: '/kelolaBuku', page: () => KelolaBuku()),
           GetPage(name: '/pengaturan', page: () => Pengaturan()),
-          GetPage(name: '/laporan', page: () => Laporan()),
           GetPage(name: '/logout', page: () => LoginPage()),
         ],
         theme: ThemeData(

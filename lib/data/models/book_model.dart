@@ -25,7 +25,7 @@ class ModelBuku {
       no_buku: json['no_buku'] ?? '-',
       jumlah: json['jumlah'] ?? 0,
       deskripsi: json['deskripsi'] ?? '-',
-      foto: json['foto'], // ✅ GANTI INI dari 'cover' ke 'foto'
+      foto: json['foto'],
     );
   }
 

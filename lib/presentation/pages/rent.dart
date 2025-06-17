@@ -47,7 +47,7 @@ class _BookScreenState extends State<BookScreen> {
   priority: Priority.high,
   ticker: 'ticker',
   icon: 'ic_stat_logo',
-  playSound: true, // ✅ tambahkan ini
+  playSound: true,
 );
 
 
@@ -89,8 +89,6 @@ Future<void> ambilPeminjamanSaya() async {
   
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = jsonDecode(response.body);
-
-    // 🔥 FILTER HANYA YANG DIPINJAM
     final List<Map<String, dynamic>> bukuDipinjam = jsonData
         .where((item) => item['status'] == 'dipinjam')
         .map((item) {
@@ -153,13 +151,6 @@ Future<void> ambilPeminjamanSaya() async {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Lingkaran putih sebagai background
-                      // Image.asset(
-                      //   'assets/Ellipse_7.png',
-                      //   width: 160,
-                      //   height: 160,
-                      // ),
-                      // Logo bookshelf di atasnya
                       Opacity(
                         opacity: 0.6,
                         child: Image.asset(

@@ -4,8 +4,22 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Butuh akses kamera untuk mengambil foto buku</string>
+
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Butuh akses galeri untuk memilih foto buku</string>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Butuh akses lokasi untuk fitur tertentu dalam aplikasi</string>
+
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Butuh izin untuk mengirimkan notifikasi ke pengguna</string>
+
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

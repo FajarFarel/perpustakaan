@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:perpustakaan/presentation/controllers/book_controller.dart';
-import 'package:perpustakaan/main.dart'; // Ganti jika LoginPage di tempat lain
+import 'package:perpustakaan/main.dart';
 import 'package:perpustakaan/core/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -22,7 +22,7 @@ void initState() {
   super.initState();
   fetchUsers();
   fetchStatistik();
-  setupSocket(); // 🔥 connect socket
+  setupSocket();
 }
 
 void setupSocket() {
@@ -37,18 +37,15 @@ void setupSocket() {
 
   socket.on('update_statistik', (_) {
     print('🔁 Event diterima: update_statistik');
-    fetchStatistik(); // ⬅️ Refresh data saat event diterima
+    fetchStatistik();
   });
 
   socket.onDisconnect((_) => print('❌ Socket disconnected'));
 }
 
-
   var users = [].obs;
   var jumlahBukuDipinjam = 0.obs;
   var jumlahPeminjamanAktif = 0.obs;
-
-  // Duplicate initState method removed
 
 Future<void> fetchUsers() async {
   try {
@@ -126,8 +123,6 @@ Future<void> fetchUsers() async {
                 children: [
                   _buildActionCard("Kelola Pengguna", Icons.people, Colors.blue, "/kelolaPengguna", context),
                   _buildActionCard("Kelola Buku", Icons.book, Colors.green, "/kelolaBuku", context),
-                  // _buildActionCard("Pengaturan", Icons.settings, Colors.orange, "/pengaturan", context),
-                  // _buildActionCard("Laporan", Icons.bar_chart, Colors.red, "/laporan", context),
                   _buildActionCard("Logout", Icons.logout, Colors.grey, "/logout", context),
                 ],
               ),
@@ -192,7 +187,7 @@ Future<void> fetchUsers() async {
   }
   @override
 void dispose() {
-  socket.dispose(); // nutup koneksi websocket biar gak bocor
+  socket.dispose();
   super.dispose();
 }
 

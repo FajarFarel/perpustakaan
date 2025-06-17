@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:perpustakaan/core/constants.dart';
-import 'package:perpustakaan/data/models/book_model.dart'; // Ubah ke model utama
+import 'package:perpustakaan/data/models/book_model.dart';
 
 class BookController extends GetxController {
   var dataBuku = <ModelBuku>[].obs;

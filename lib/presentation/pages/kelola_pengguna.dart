@@ -60,7 +60,7 @@ Future<void> fetchUsers() async {
               itemBuilder: (context, index) {
                 var user = users[index];
 
-                print("User ke-$index: $user"); // Debugging untuk cek isi user
+                print("User ke-$index: $user");
 
                 if (user is! Map ||
                     !user.containsKey('nama') ||

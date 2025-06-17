@@ -37,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
             : baseUrl + widget.foto!.replaceAll('\\', '/'))
         : "assets/default_image.png";
 
-    print("Image URL: $imageUrl"); // Debugging
+    print("Image URL: $imageUrl");
     print("Foto dari database: ${widget.foto}");
   }
 
@@ -70,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.center, // biar avatar tetap di tengah
+                  CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 50,
@@ -91,8 +91,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
-
-                /// Bagian teks rata kiri
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Column(
@@ -135,16 +133,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   size: 200,
                 ),
                 SizedBox(height: 20),
-                // ElevatedButton(
-                //   onPressed: () {
-                //     Navigator.pop(context);
-                //   },
-                //   child: Text('Kembali'),
-                //   style: ElevatedButton.styleFrom(
-                //     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                //     textStyle: TextStyle(fontSize: 16),
-                //   ),
-                // ),
               ],
             ),
           ),

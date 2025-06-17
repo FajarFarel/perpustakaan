@@ -13,7 +13,6 @@ class KelolaBuku extends StatefulWidget {
   State<KelolaBuku> createState() => _KelolaBukuState();
 }
 
-// Tambahkan di atas class
 TextEditingController judulController = TextEditingController();
 TextEditingController penulisController = TextEditingController();
 TextEditingController noBukuController = TextEditingController();
@@ -74,14 +73,13 @@ class _KelolaBukuState extends State<KelolaBuku> {
   }
 
 void _showForm({ModelBuku? buku}) {
-  // Isi data jika mode edit
   if (buku != null) {
     judulController.text = buku.judul;
     penulisController.text = buku.penulis;
     noBukuController.text = buku.no_buku;
     jumlahController.text = buku.jumlah.toString();
     deskripsiController.text = buku.deskripsi;
-    selectedImage = null; // Atur sesuai logic kamu kalau ingin preview gambar lama
+    selectedImage = null; 
   } else {
     judulController.clear();
     penulisController.clear();
