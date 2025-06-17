@@ -69,8 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 50,
@@ -118,7 +117,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-
                 SizedBox(height: 20),
                 Divider(),
                 SizedBox(height: 20),

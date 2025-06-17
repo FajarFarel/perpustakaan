@@ -17,52 +17,52 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
- @override
-void initState() {
-  super.initState();
-  requestPermissions().then((_) {
-    _checkLoginStatus();
-  });
-}
-
-Future<void> requestPermissions() async {
-  Map<Permission, PermissionStatus> statuses;
-
-  if (Platform.isAndroid) {
-    statuses = await [
-      Permission.camera,
-      Permission.location,
-      if (Platform.version.contains('13') || Platform.version.contains('14'))
-        Permission.photos
-      else
-        Permission.storage,
-    ].request();
-  } else if (Platform.isIOS) {
-    statuses = await [
-      Permission.camera,
-      Permission.photos,
-      Permission.location,
-      Permission.notification,
-    ].request();
-  } else {
-    statuses = {};
+  @override
+  void initState() {
+    super.initState();
+    requestPermissions().then((_) {
+      _checkLoginStatus();
+    });
   }
 
-  statuses.forEach((permission, status) {
-    print('$permission: $status');
-  });
+  Future<void> requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses;
 
-  if (statuses.values.any((status) => status.isPermanentlyDenied)) {
-    await openAppSettings();
+    if (Platform.isAndroid) {
+      statuses = await [
+        Permission.camera,
+        Permission.location,
+        if (Platform.version.contains('13') || Platform.version.contains('14'))
+          Permission.photos
+        else
+          Permission.storage,
+      ].request();
+    } else if (Platform.isIOS) {
+      statuses = await [
+        Permission.camera,
+        Permission.photos,
+        Permission.location,
+        Permission.notification,
+      ].request();
+    } else {
+      statuses = {};
+    }
+
+    statuses.forEach((permission, status) {
+      print('$permission: $status');
+    });
+
+    if (statuses.values.any((status) => status.isPermanentlyDenied)) {
+      await openAppSettings();
+    }
   }
-}
 
   void _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
     final loginTimeStr = prefs.getString("loginTime");
 
-    await Future.delayed(const Duration(seconds: 3)); 
+    await Future.delayed(const Duration(seconds: 3));
 
     if (isLoggedIn && loginTimeStr != null) {
       final loginTime = DateTime.tryParse(loginTimeStr);
@@ -148,7 +148,6 @@ Future<void> requestPermissions() async {
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Text(

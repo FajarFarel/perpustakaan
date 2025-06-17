@@ -9,19 +9,19 @@ class BookController extends GetxController {
   var dataBuku = <ModelBuku>[].obs;
   File? selectedImage;
 
-Future<void> fetchDataBuku() async {
-  try {
-    final response = await http.get(Uri.parse('$baseUrl/data_buku'));
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
-      dataBuku.value = data.map((item) => ModelBuku.fromJson(item)).toList();
-    } else {
-      print("❌ Gagal ambil data: ${response.statusCode}");
+  Future<void> fetchDataBuku() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/data_buku'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        dataBuku.value = data.map((item) => ModelBuku.fromJson(item)).toList();
+      } else {
+        print("❌ Gagal ambil data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("❌ Error ambil data: $e");
     }
-  } catch (e) {
-    print("❌ Error ambil data: $e");
   }
-}
 
   void tambahDataBuku(String judul, String penulis, String noBuku,
       String jumlah, String deskripsi, File? foto) async {

@@ -17,62 +17,64 @@ class _AdminHomePageState extends State<AdminHomePage> {
   final BookController bookController = Get.put(BookController());
   late IO.Socket socket;
 
-@override
-void initState() {
-  super.initState();
-  fetchUsers();
-  fetchStatistik();
-  setupSocket();
-}
-
-void setupSocket() {
-  socket = IO.io(baseUrl, <String, dynamic>{
-    'transports': ['websocket'],
-    'autoConnect': true,
-  });
-
-  socket.onConnect((_) {
-    print('✅ Socket terhubung ke server');
-  });
-
-  socket.on('update_statistik', (_) {
-    print('🔁 Event diterima: update_statistik');
+  @override
+  void initState() {
+    super.initState();
+    fetchUsers();
     fetchStatistik();
-  });
+    setupSocket();
+  }
 
-  socket.onDisconnect((_) => print('❌ Socket disconnected'));
-}
+  void setupSocket() {
+    socket = IO.io(baseUrl, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+    });
+
+    socket.onConnect((_) {
+      print('✅ Socket terhubung ke server');
+    });
+
+    socket.on('update_statistik', (_) {
+      print('🔁 Event diterima: update_statistik');
+      fetchStatistik();
+    });
+
+    socket.onDisconnect((_) => print('❌ Socket disconnected'));
+  }
 
   var users = [].obs;
   var jumlahBukuDipinjam = 0.obs;
   var jumlahPeminjamanAktif = 0.obs;
 
-Future<void> fetchUsers() async {
-  try {
-    final response = await http.get(Uri.parse('$baseUrl/users'));
+  Future<void> fetchUsers() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/users'));
 
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        var decodedData = json.decode(response.body);
 
-      if (decodedData is List) {
-        users.value = decodedData;
-      } else if (decodedData is Map && decodedData.containsKey('users')) {
-        users.value = decodedData['users'];
+        if (decodedData is List) {
+          users.value = decodedData;
+        } else if (decodedData is Map && decodedData.containsKey('users')) {
+          users.value = decodedData['users'];
+        } else {
+          throw Exception("Format data tidak sesuai");
+        }
       } else {
-        throw Exception("Format data tidak sesuai");
+        print("❌ Gagal ambil data pengguna: ${response.statusCode}");
       }
-    } else {
-      print("❌ Gagal ambil data pengguna: ${response.statusCode}");
+    } catch (e) {
+      print("❌ Error fetch users: $e");
     }
-  } catch (e) {
-    print("❌ Error fetch users: $e");
   }
-}
 
   Future<void> fetchStatistik() async {
     try {
-      final bukuRes = await http.get(Uri.parse('$baseUrl/jumlah-buku-dipinjam'));
-      final aktifRes = await http.get(Uri.parse('$baseUrl/jumlah-peminjaman-aktif'));
+      final bukuRes =
+          await http.get(Uri.parse('$baseUrl/jumlah-buku-dipinjam'));
+      final aktifRes =
+          await http.get(Uri.parse('$baseUrl/jumlah-peminjaman-aktif'));
 
       if (bukuRes.statusCode == 200) {
         jumlahBukuDipinjam.value = json.decode(bukuRes.body)['jumlah'];
@@ -95,7 +97,8 @@ Future<void> fetchUsers() async {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Statistik", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text("Statistik",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             Expanded(
               child: GridView.count(
@@ -104,15 +107,22 @@ Future<void> fetchUsers() async {
                 mainAxisSpacing: 10,
                 shrinkWrap: true,
                 children: [
-                  Obx(() => _buildStatCard("Total Pengguna", "${users.length}", Icons.people)),
-                  Obx(() => _buildStatCard("Peminjaman Aktif", "${jumlahPeminjamanAktif.value}", Icons.assignment)),
-                  Obx(() => _buildStatCard("Total Buku", "${bookController.dataBuku.length}", Icons.library_books)),
-                  Obx(() => _buildStatCard("Buku Dipinjam", "${jumlahBukuDipinjam.value}", Icons.book)),               
+                  Obx(() => _buildStatCard(
+                      "Total Pengguna", "${users.length}", Icons.people)),
+                  Obx(() => _buildStatCard("Peminjaman Aktif",
+                      "${jumlahPeminjamanAktif.value}", Icons.assignment)),
+                  Obx(() => _buildStatCard(
+                      "Total Buku",
+                      "${bookController.dataBuku.length}",
+                      Icons.library_books)),
+                  Obx(() => _buildStatCard("Buku Dipinjam",
+                      "${jumlahBukuDipinjam.value}", Icons.book)),
                 ],
               ),
             ),
             SizedBox(height: 20),
-            Text("Aksi", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text("Aksi",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             Expanded(
               child: GridView.count(
@@ -121,9 +131,12 @@ Future<void> fetchUsers() async {
                 mainAxisSpacing: 10,
                 shrinkWrap: true,
                 children: [
-                  _buildActionCard("Kelola Pengguna", Icons.people, Colors.blue, "/kelolaPengguna", context),
-                  _buildActionCard("Kelola Buku", Icons.book, Colors.green, "/kelolaBuku", context),
-                  _buildActionCard("Logout", Icons.logout, Colors.grey, "/logout", context),
+                  _buildActionCard("Kelola Pengguna", Icons.people, Colors.blue,
+                      "/kelolaPengguna", context),
+                  _buildActionCard("Kelola Buku", Icons.book, Colors.green,
+                      "/kelolaBuku", context),
+                  _buildActionCard(
+                      "Logout", Icons.logout, Colors.grey, "/logout", context),
                 ],
               ),
             ),
@@ -143,7 +156,8 @@ Future<void> fetchUsers() async {
           children: [
             Icon(icon, size: 40, color: Colors.blue),
             SizedBox(height: 10),
-            Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(title,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             SizedBox(height: 5),
             Text(count, style: TextStyle(fontSize: 18, color: Colors.black)),
           ],
@@ -152,7 +166,8 @@ Future<void> fetchUsers() async {
     );
   }
 
-  Widget _buildActionCard(String title, IconData icon, Color color, String route, BuildContext context) {
+  Widget _buildActionCard(String title, IconData icon, Color color,
+      String route, BuildContext context) {
     return GestureDetector(
       onTap: () async {
         if (title == "Logout") {
@@ -178,17 +193,21 @@ Future<void> fetchUsers() async {
             children: [
               Icon(icon, size: 40, color: Colors.white),
               SizedBox(height: 10),
-              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
             ],
           ),
         ),
       ),
     );
   }
-  @override
-void dispose() {
-  socket.dispose();
-  super.dispose();
-}
 
+  @override
+  void dispose() {
+    socket.dispose();
+    super.dispose();
+  }
 }

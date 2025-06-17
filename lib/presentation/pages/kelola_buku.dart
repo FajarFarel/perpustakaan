@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:perpustakaan/presentation/controllers/book_controller.dart';
 import 'package:perpustakaan/data/models/book_model.dart';
-import 'package:perpustakaan/core/constants.dart'; 
+import 'package:perpustakaan/core/constants.dart';
 
 class KelolaBuku extends StatefulWidget {
   const KelolaBuku({super.key});
@@ -72,173 +72,174 @@ class _KelolaBukuState extends State<KelolaBuku> {
     }
   }
 
-void _showForm({ModelBuku? buku}) {
-  if (buku != null) {
-    judulController.text = buku.judul;
-    penulisController.text = buku.penulis;
-    noBukuController.text = buku.no_buku;
-    jumlahController.text = buku.jumlah.toString();
-    deskripsiController.text = buku.deskripsi;
-    selectedImage = null; 
-  } else {
-    judulController.clear();
-    penulisController.clear();
-    noBukuController.clear();
-    jumlahController.clear();
-    deskripsiController.clear();
-    selectedImage = null;
-  }
-
-  Future<void> pickImage(ImageSource source, void Function(void Function()) updateState) async {
-    final picker = ImagePicker();
-    try {
-      final XFile? image = await picker.pickImage(source: source);
-      if (image != null) {
-        updateState(() {
-          selectedImage = File(image.path);
-        });
-      }
-    } catch (e) {
-      Get.snackbar("Error", "Gagal mengambil gambar: $e");
+  void _showForm({ModelBuku? buku}) {
+    if (buku != null) {
+      judulController.text = buku.judul;
+      penulisController.text = buku.penulis;
+      noBukuController.text = buku.no_buku;
+      jumlahController.text = buku.jumlah.toString();
+      deskripsiController.text = buku.deskripsi;
+      selectedImage = null;
+    } else {
+      judulController.clear();
+      penulisController.clear();
+      noBukuController.clear();
+      jumlahController.clear();
+      deskripsiController.clear();
+      selectedImage = null;
     }
-  }
 
-  Get.dialog(
-    AlertDialog(
-      title: Text(buku == null ? 'Tambah Buku' : 'Edit Buku'),
-      content: StatefulBuilder(
-        builder: (context, setState) => SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: judulController,
-                decoration: const InputDecoration(labelText: 'Judul'),
-              ),
-              TextField(
-                controller: penulisController,
-                decoration: const InputDecoration(labelText: 'Penulis'),
-              ),
-              TextField(
-                controller: noBukuController,
-                decoration: const InputDecoration(labelText: 'No Buku'),
-              ),
-              TextField(
-                controller: jumlahController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Jumlah'),
-              ),
-              TextField(
-                controller: deskripsiController,
-                decoration: const InputDecoration(labelText: 'Deskripsi'),
-              ),
-              const SizedBox(height: 10),
-              selectedImage != null
-                  ? Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Image.file(
-                        selectedImage!,
-                        height: 120,
-                        width: 120,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : const Text("Belum ada gambar"),
-              ElevatedButton.icon(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.camera_alt),
-                          title: const Text("Ambil Foto"),
-                          onTap: () {
-                            Navigator.pop(context);
-                            pickImage(ImageSource.camera, setState);
-                          },
+    Future<void> pickImage(
+        ImageSource source, void Function(void Function()) updateState) async {
+      final picker = ImagePicker();
+      try {
+        final XFile? image = await picker.pickImage(source: source);
+        if (image != null) {
+          updateState(() {
+            selectedImage = File(image.path);
+          });
+        }
+      } catch (e) {
+        Get.snackbar("Error", "Gagal mengambil gambar: $e");
+      }
+    }
+
+    Get.dialog(
+      AlertDialog(
+        title: Text(buku == null ? 'Tambah Buku' : 'Edit Buku'),
+        content: StatefulBuilder(
+          builder: (context, setState) => SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: judulController,
+                  decoration: const InputDecoration(labelText: 'Judul'),
+                ),
+                TextField(
+                  controller: penulisController,
+                  decoration: const InputDecoration(labelText: 'Penulis'),
+                ),
+                TextField(
+                  controller: noBukuController,
+                  decoration: const InputDecoration(labelText: 'No Buku'),
+                ),
+                TextField(
+                  controller: jumlahController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Jumlah'),
+                ),
+                TextField(
+                  controller: deskripsiController,
+                  decoration: const InputDecoration(labelText: 'Deskripsi'),
+                ),
+                const SizedBox(height: 10),
+                selectedImage != null
+                    ? Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade300),
                         ),
-                        ListTile(
-                          leading: const Icon(Icons.photo_library),
-                          title: const Text("Pilih dari Galeri"),
-                          onTap: () {
-                            Navigator.pop(context);
-                            pickImage(ImageSource.gallery, setState);
-                          },
+                        clipBehavior: Clip.antiAlias,
+                        child: Image.file(
+                          selectedImage!,
+                          height: 120,
+                          width: 120,
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.image),
-                label: const Text("Pilih Gambar"),
-              ),
-            ],
+                      )
+                    : const Text("Belum ada gambar"),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.camera_alt),
+                            title: const Text("Ambil Foto"),
+                            onTap: () {
+                              Navigator.pop(context);
+                              pickImage(ImageSource.camera, setState);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.photo_library),
+                            title: const Text("Pilih dari Galeri"),
+                            onTap: () {
+                              Navigator.pop(context);
+                              pickImage(ImageSource.gallery, setState);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.image),
+                  label: const Text("Pilih Gambar"),
+                ),
+              ],
+            ),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (judulController.text.isEmpty ||
+                  penulisController.text.isEmpty ||
+                  noBukuController.text.isEmpty ||
+                  jumlahController.text.isEmpty ||
+                  deskripsiController.text.isEmpty) {
+                Get.snackbar("Error", "Semua field wajib diisi",
+                    backgroundColor: Colors.redAccent, colorText: Colors.white);
+                return;
+              }
+
+              if (int.tryParse(jumlahController.text) == null ||
+                  int.parse(jumlahController.text) <= 0) {
+                Get.snackbar("Error", "Jumlah harus angka dan lebih dari 0",
+                    backgroundColor: Colors.redAccent, colorText: Colors.white);
+                return;
+              }
+
+              if (buku == null) {
+                bookController.tambahDataBuku(
+                  judulController.text,
+                  penulisController.text,
+                  noBukuController.text,
+                  jumlahController.text,
+                  deskripsiController.text,
+                  selectedImage,
+                );
+              } else {
+                bookController.updateDataBuku(
+                  buku.id,
+                  judulController.text,
+                  penulisController.text,
+                  noBukuController.text,
+                  jumlahController.text,
+                  deskripsiController.text,
+                  selectedImage,
+                );
+              }
+
+              Get.back();
+            },
+            child: Text(buku == null ? "Simpan" : "Update"),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Get.back(),
-          child: const Text("Batal"),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (judulController.text.isEmpty ||
-                penulisController.text.isEmpty ||
-                noBukuController.text.isEmpty ||
-                jumlahController.text.isEmpty ||
-                deskripsiController.text.isEmpty) {
-              Get.snackbar("Error", "Semua field wajib diisi",
-                  backgroundColor: Colors.redAccent, colorText: Colors.white);
-              return;
-            }
+      barrierDismissible: false,
+    );
+  }
 
-            if (int.tryParse(jumlahController.text) == null ||
-                int.parse(jumlahController.text) <= 0) {
-              Get.snackbar("Error", "Jumlah harus angka dan lebih dari 0",
-                  backgroundColor: Colors.redAccent, colorText: Colors.white);
-              return;
-            }
-
-            if (buku == null) {
-              bookController.tambahDataBuku(
-                judulController.text,
-                penulisController.text,
-                noBukuController.text,
-                jumlahController.text,
-                deskripsiController.text,
-                selectedImage,
-              );
-            } else {
-              bookController.updateDataBuku(
-                buku.id,
-                judulController.text,
-                penulisController.text,
-                noBukuController.text,
-                jumlahController.text,
-                deskripsiController.text,
-                selectedImage,
-              );
-            }
-
-            Get.back();
-          },
-          child: Text(buku == null ? "Simpan" : "Update"),
-        ),
-      ],
-    ),
-    barrierDismissible: false,
-  );
-}
-
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Kelola Buku')),
@@ -307,8 +308,8 @@ void _showForm({ModelBuku? buku}) {
                                         )
                                       : Container(
                                           color: Colors.grey[200],
-                                          child: const Icon(Icons.book,
-                                              size: 60),
+                                          child:
+                                              const Icon(Icons.book, size: 60),
                                         ),
                                 ),
                               ),
@@ -317,11 +318,9 @@ void _showForm({ModelBuku? buku}) {
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold)),
                               Text("No Buku: ${buku.no_buku}",
-                                  style:
-                                      TextStyle(color: Colors.grey[600])),
+                                  style: TextStyle(color: Colors.grey[600])),
                               Text("Stok: ${buku.jumlah}",
-                                  style:
-                                      TextStyle(color: Colors.grey[600])),
+                                  style: TextStyle(color: Colors.grey[600])),
                               const SizedBox(height: 15),
                               Text(buku.deskripsi,
                                   style: const TextStyle(fontSize: 14)),
@@ -358,9 +357,8 @@ void _showForm({ModelBuku? buku}) {
                                   '$baseUrl/uploads/buku/${buku.foto}',
                                   fit: BoxFit.cover,
                                   width: double.infinity,
-                                  errorBuilder:
-                                      (context, error, stackTrace) =>
-                                          Container(
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
                                     color: Colors.grey[300],
                                     child: const Icon(Icons.broken_image),
                                   ),

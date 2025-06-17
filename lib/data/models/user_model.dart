@@ -5,7 +5,12 @@ class User {
   final String role;
   final String alamat;
 
-  User({required this.id, required this.nama, required this.email, required this.role, required this.alamat});
+  User(
+      {required this.id,
+      required this.nama,
+      required this.email,
+      required this.role,
+      required this.alamat});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

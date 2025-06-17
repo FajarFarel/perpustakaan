@@ -39,17 +39,16 @@ class _BookScreenState extends State<BookScreen> {
 
   void showNotification(String title, String message) async {
     const AndroidNotificationDetails androidDetails =
-    AndroidNotificationDetails(
-  'reminder_channel',
-  'Pengingat Pengembalian',
-  channelDescription: 'Notifikasi pengingat buku',
-  importance: Importance.max,
-  priority: Priority.high,
-  ticker: 'ticker',
-  icon: 'ic_stat_logo',
-  playSound: true,
-);
-
+        AndroidNotificationDetails(
+      'reminder_channel',
+      'Pengingat Pengembalian',
+      channelDescription: 'Notifikasi pengingat buku',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      icon: 'ic_stat_logo',
+      playSound: true,
+    );
 
     const NotificationDetails platformDetails =
         NotificationDetails(android: androidDetails);
@@ -62,65 +61,63 @@ class _BookScreenState extends State<BookScreen> {
     );
   }
 
-int calculateRemainingDays(DateTime returnDate) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final target = DateTime(returnDate.year, returnDate.month, returnDate.day);
-  final difference = target.difference(today).inDays;
-  return difference;
-}
-
-
-Future<void> ambilPeminjamanSaya() async {
-  final prefs = await SharedPreferences.getInstance();
-  await Future.delayed(Duration(milliseconds: 100));
-
-  final npm = prefs.getString('npm');
-  print('📦 NPM dari SharedPreferences di rent.dart: $npm');
-
-  if (npm == null) {
-    print('❌ GAGAL: NPM tidak ditemukan di SharedPreferences');
-    return;
+  int calculateRemainingDays(DateTime returnDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(returnDate.year, returnDate.month, returnDate.day);
+    final difference = target.difference(today).inDays;
+    return difference;
   }
 
-  final response = await http.get(Uri.parse('$baseUrl/peminjaman_user/$npm'));
-  print('📡 URL: $baseUrl/peminjaman_user/$npm');
-  print('📥 Response body: ${response.body}');
-  
-  if (response.statusCode == 200) {
-    final List<dynamic> jsonData = jsonDecode(response.body);
-    final List<Map<String, dynamic>> bukuDipinjam = jsonData
-        .where((item) => item['status'] == 'dipinjam')
-        .map((item) {
-          final borrowDate = DateTime.parse(item['borrowDate']);
-          final returnDate = DateTime.parse(item['returnDate']);
-          final remainingDays = calculateRemainingDays(returnDate);
-          final isbn = item['isbn'];
+  Future<void> ambilPeminjamanSaya() async {
+    final prefs = await SharedPreferences.getInstance();
+    await Future.delayed(Duration(milliseconds: 100));
 
-          if (remainingDays <= 3 &&
-              remainingDays >= 0 &&
-              !sudahDiberiNotifikasi.contains(isbn)) {
-            showNotification(
-              '📚 Pengingat Pengembalian Buku',
-              'Buku "${item['title']}" harus dikembalikan dalam $remainingDays hari!',
-            );
-            sudahDiberiNotifikasi.add(isbn);
-          }
+    final npm = prefs.getString('npm');
+    print('📦 NPM dari SharedPreferences di rent.dart: $npm');
 
-          return {
-            'title': item['title'],
-            'isbn': isbn,
-            'borrowDate': borrowDate,
-            'returnDate': returnDate,
-            'cover': item['cover'] ?? 'assets/placeholder.jpg',
-          };
-        }).toList();
+    if (npm == null) {
+      print('❌ GAGAL: NPM tidak ditemukan di SharedPreferences');
+      return;
+    }
 
-    setState(() {
-      books = bukuDipinjam;
-    });
+    final response = await http.get(Uri.parse('$baseUrl/peminjaman_user/$npm'));
+    print('📡 URL: $baseUrl/peminjaman_user/$npm');
+    print('📥 Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = jsonDecode(response.body);
+      final List<Map<String, dynamic>> bukuDipinjam =
+          jsonData.where((item) => item['status'] == 'dipinjam').map((item) {
+        final borrowDate = DateTime.parse(item['borrowDate']);
+        final returnDate = DateTime.parse(item['returnDate']);
+        final remainingDays = calculateRemainingDays(returnDate);
+        final isbn = item['isbn'];
+
+        if (remainingDays <= 3 &&
+            remainingDays >= 0 &&
+            !sudahDiberiNotifikasi.contains(isbn)) {
+          showNotification(
+            '📚 Pengingat Pengembalian Buku',
+            'Buku "${item['title']}" harus dikembalikan dalam $remainingDays hari!',
+          );
+          sudahDiberiNotifikasi.add(isbn);
+        }
+
+        return {
+          'title': item['title'],
+          'isbn': isbn,
+          'borrowDate': borrowDate,
+          'returnDate': returnDate,
+          'cover': item['cover'] ?? 'assets/placeholder.jpg',
+        };
+      }).toList();
+
+      setState(() {
+        books = bukuDipinjam;
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

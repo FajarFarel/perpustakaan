@@ -19,35 +19,35 @@ class _KelolaPenggunaState extends State<KelolaPengguna> {
     fetchUsers();
   }
 
-Future<void> fetchUsers() async {
-  try {
-    final response = await http.get(Uri.parse('$baseUrl/users'));
+  Future<void> fetchUsers() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/users'));
 
-    print("Raw Response: ${response.body}");
+      print("Raw Response: ${response.body}");
 
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      print("Decoded Data: $decodedData");
+      if (response.statusCode == 200) {
+        var decodedData = json.decode(response.body);
+        print("Decoded Data: $decodedData");
 
-      if (decodedData is List) {
-        setState(() {
-          users = decodedData;
-        });
-      } else if (decodedData is Map && decodedData.containsKey('users')) {
-        setState(() {
-          users = decodedData['users'];
-        });
+        if (decodedData is List) {
+          setState(() {
+            users = decodedData;
+          });
+        } else if (decodedData is Map && decodedData.containsKey('users')) {
+          setState(() {
+            users = decodedData['users'];
+          });
+        } else {
+          throw Exception("Format data tidak sesuai");
+        }
       } else {
-        throw Exception("Format data tidak sesuai");
+        throw Exception(
+            "Gagal mengambil data pengguna, status: ${response.statusCode}");
       }
-    } else {
-      throw Exception("Gagal mengambil data pengguna, status: ${response.statusCode}");
+    } catch (e) {
+      print("❌ Error: $e");
     }
-  } catch (e) {
-    print("❌ Error: $e");
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

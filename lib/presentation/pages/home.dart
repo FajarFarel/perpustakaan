@@ -58,7 +58,6 @@ class HomePageState extends State<HomePage>
         ? widget.foto!
         : "assets/default_image.png";
 
-
     userData = {
       'nama': widget.name,
       'email': widget.email,
@@ -111,7 +110,7 @@ class HomePageState extends State<HomePage>
         return Icon(Icons.broken_image, size: size);
       }
     }
-    
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(size / 2),
       child: Image.network(
@@ -215,7 +214,7 @@ class HomePageState extends State<HomePage>
                             'author': book.penulis,
                             'no_buku': book.no_buku,
                             'stock': book.jumlah,
-                            'cover': book.foto, 
+                            'cover': book.foto,
                             'description': book.deskripsi,
                           }),
                           child: Card(

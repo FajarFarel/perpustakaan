@@ -84,7 +84,8 @@ class _PengaturanPageState extends State<PengaturanPage> {
         await prefs.setString('user', responseBody);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('✅ Profil berhasil diperbarui, harap login ulang')),
+          SnackBar(
+              content: Text('✅ Profil berhasil diperbarui, harap login ulang')),
         );
         Navigator.pop(context);
       } else {
@@ -116,9 +117,11 @@ class _PengaturanPageState extends State<PengaturanPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('Pengaturan Profil', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
-            backgroundColor: AppColors.secondary,
-            iconTheme: IconThemeData(color: AppColors.textPrimary),
+          title: Text('Pengaturan Profil',
+              style: TextStyle(
+                  color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+          backgroundColor: AppColors.secondary,
+          iconTheme: IconThemeData(color: AppColors.textPrimary),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -177,7 +180,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 8,
-                        offset: Offset(0, 4), 
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),

@@ -91,8 +91,7 @@ class PentagonClipper extends CustomClipper<Path> {
 
     for (int i = 1; i < 5; i++) {
       path.lineTo(
-        centerX +
-            radius * cos((angle * i - 90) * pi / 180),
+        centerX + radius * cos((angle * i - 90) * pi / 180),
         centerY + radius * sin((angle * i - 90) * pi / 180),
       );
     }
@@ -148,10 +147,8 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       final pickedFile = await _picker.pickImage(
         source: source,
-        imageQuality:
-            100,
-        maxWidth:
-            600,
+        imageQuality: 100,
+        maxWidth: 600,
       );
       if (pickedFile != null) {
         setState(() {
@@ -480,41 +477,41 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
- void _validateAndLogin() async {
-  print("🔄 Tombol Login Ditekan!");
-  final email = _emailController.text.trim();
-  final password = _passwordController.text.trim();
+  void _validateAndLogin() async {
+    print("🔄 Tombol Login Ditekan!");
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-  if (!email.endsWith('@gmail.com')) {
-    _showErrorDialog('Email harus berakhiran @gmail.com');
-    return;
-  }
-  if (!RegExp(r'^\d{1,8}$').hasMatch(password)) {
-    _showErrorDialog('Password harus terdiri dari 1-8 digit angka');
-    return;
-  }
-
-  final connectivity = await Connectivity().checkConnectivity();
-  final info = NetworkInfo();
-
-  if (connectivity == ConnectivityResult.wifi) {
-    String? ssid = await info.getWifiName();
-    ssid = ssid?.replaceAll('"', '');
-
-    if (ssid == "$wifi") {
-      print("📶 Terhubung ke Wi-Fi yang diizinkan: $ssid");
-      AuthController().loginUser(context, email, password);
-    } else {
-      print("🚫 Terhubung ke Wi-Fi lain: $ssid");
-      _showErrorDialog(
-          'Silakan hubungkan perangkat ke Wi-Fi "$wifi" untuk melanjutkan login.');
+    if (!email.endsWith('@gmail.com')) {
+      _showErrorDialog('Email harus berakhiran @gmail.com');
+      return;
     }
-  } else {
-    print("❌ Tidak terhubung ke Wi-Fi mana pun");
-    _showErrorDialog(
-        'Kamu tidak tersambung ke jaringan Wi-Fi mana pun. Silakan hubungkan ke Wi-Fi "$wifi".');
+    if (!RegExp(r'^\d{1,8}$').hasMatch(password)) {
+      _showErrorDialog('Password harus terdiri dari 1-8 digit angka');
+      return;
+    }
+
+    final connectivity = await Connectivity().checkConnectivity();
+    final info = NetworkInfo();
+
+    if (connectivity == ConnectivityResult.wifi) {
+      String? ssid = await info.getWifiName();
+      ssid = ssid?.replaceAll('"', '');
+
+      if (ssid == "$wifi") {
+        print("📶 Terhubung ke Wi-Fi yang diizinkan: $ssid");
+        AuthController().loginUser(context, email, password);
+      } else {
+        print("🚫 Terhubung ke Wi-Fi lain: $ssid");
+        _showErrorDialog(
+            'Silakan hubungkan perangkat ke Wi-Fi "$wifi" untuk melanjutkan login.');
+      }
+    } else {
+      print("❌ Tidak terhubung ke Wi-Fi mana pun");
+      _showErrorDialog(
+          'Kamu tidak tersambung ke jaringan Wi-Fi mana pun. Silakan hubungkan ke Wi-Fi "$wifi".');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

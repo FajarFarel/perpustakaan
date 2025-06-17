@@ -35,7 +35,8 @@ class _PengaturanState extends State<Pengaturan> {
   Future<void> _clearData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    Get.snackbar('Sukses', 'Data pengguna telah dihapus!', snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar('Sukses', 'Data pengguna telah dihapus!',
+        snackPosition: SnackPosition.BOTTOM);
   }
 
   @override
@@ -55,7 +56,8 @@ class _PengaturanState extends State<Pengaturan> {
           ),
           SwitchListTile(
             title: const Text("Notifikasi Peminjaman"),
-            subtitle: const Text("Terima pemberitahuan tentang peminjaman buku"),
+            subtitle:
+                const Text("Terima pemberitahuan tentang peminjaman buku"),
             value: _notificationsEnabled,
             onChanged: (value) {
               setState(() => _notificationsEnabled = value);
@@ -75,7 +77,8 @@ class _PengaturanState extends State<Pengaturan> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text("Konfirmasi"),
-                  content: const Text("Apakah Anda yakin ingin menghapus semua data pengguna?"),
+                  content: const Text(
+                      "Apakah Anda yakin ingin menghapus semua data pengguna?"),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
