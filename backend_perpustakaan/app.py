@@ -18,15 +18,11 @@ import pymysql.cursors  # atau pastikan ini di bagian atas
 
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+DENDA_PER_HARI = 2000  # Denda per hari keterlambatan
 
 # 🔹 Inisialisasi Aplikasi Flask
 app = Flask(__name__)
-CORS(app, origins=[
-  "http://127.0.0.1:5500",
-  "http://localhost:5500",
-  "http://127.0.0.1:5501",  # Tambahkan ini
-  "http://localhost:5501"
-]) # izinkan domain frontend lokal
+CORS(app, resources={r"/*": {"origins": "*"}})
 # Untuk komunikasi real-time
 
 def get_db_connection():
@@ -70,16 +66,20 @@ def get_users():
     try:
         db = get_db_connection()
         cursor = db.cursor(pymysql.cursors.DictCursor)
+
+        # Ambil langsung dari tabel mahasiswa (kolom denda sudah ada)
         cursor.execute("SELECT * FROM mahasiswa")
         users = cursor.fetchall()
 
         for user in users:
             foto = user.get("foto")
             if foto:
-                # Buat URL penuh untuk akses gambar
                 user["foto"] = f"{request.host_url}/uploads/profil/{foto}"
             else:
-                user["foto"] = None  # kalau tidak ada foto
+                user["foto"] = None
+
+            if user.get("denda") is None:
+                user["denda"] = 0
 
         return jsonify({"users": users})
 
@@ -751,6 +751,85 @@ def jumlah_peminjaman_aktif():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/cek_denda_npm/<string:npm>', methods=['GET'])
+def cek_denda_npm(npm):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # Cari mahasiswa berdasarkan NPM
+        cursor.execute("SELECT id, denda FROM mahasiswa WHERE npm = %s", (npm,))
+        mhs = cursor.fetchone()
+        if not mhs:
+            return jsonify({"error": "Mahasiswa tidak ditemukan"}), 404
+
+        id_mahasiswa = mhs['id']
+        denda_sekarang = mhs['denda'] or 0
+        total_tambahan = 0
+
+        # Ambil semua peminjaman aktif yang telat dikembalikan
+        cursor.execute("""
+            SELECT id, tanggal_kembali
+            FROM peminjaman_buku
+            WHERE id_mahasiswa = %s AND status = 'dipinjam'
+        """, (id_mahasiswa,))
+        data = cursor.fetchall()
+
+        now = datetime.now().date()
+        for row in data:
+            tgl_kembali = row['tanggal_kembali']
+            if now > tgl_kembali:
+                hari_telat = (now - tgl_kembali).days
+                denda_baru = hari_telat * DENDA_PER_HARI  # nilai konstan dari atas file
+                total_tambahan += denda_baru
+
+        # Akumulasi denda baru ke total lama
+        total_akhir = denda_sekarang + total_tambahan
+        cursor.execute("UPDATE mahasiswa SET denda = %s WHERE id = %s", (total_akhir, id_mahasiswa))
+        conn.commit()
+
+        return jsonify({
+            "message": "Denda berhasil diperbarui",
+            "total_denda": total_akhir
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/update_denda', methods=['POST'])
+def update_denda():
+    try:
+        data = request.get_json()
+        npm = data.get("npm")
+        denda = data.get("denda")
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Update langsung ke tabel mahasiswa
+        cursor.execute("""
+            UPDATE mahasiswa
+            SET denda = %s
+            WHERE npm = %s
+        """, (denda, npm))
+
+        conn.commit()
+        return jsonify({"message": f"Denda untuk NPM {npm} berhasil diperbarui!"}), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
 
 # 🔹 Endpoint Beranda (Health Check)
 @app.route('/')

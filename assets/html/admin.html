@@ -172,6 +172,7 @@ oninput="filterPengguna()">
           <th>NoTelp</th>
           <th>Email</th>
           <th>Alamat</th>
+          <th>Denda</th>
           <th>Status</th>
           <th>Aksi</th>
         </tr>
@@ -182,6 +183,26 @@ oninput="filterPengguna()">
 
   <script>
     let semuaPengguna = [];
+
+      function editDenda(npm) {
+    const dendaBaru = prompt("Masukkan jumlah denda baru untuk NPM: " + npm);
+    if (dendaBaru === null) return;
+
+    fetch(`${API_URL}/update_denda`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ npm: npm, denda: parseInt(dendaBaru) })
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Denda diperbarui!");
+      document.getElementById(`denda-${npm}`).innerText = dendaBaru;
+    })
+    .catch(err => {
+      alert("Gagal update denda");
+      console.error(err);
+    });
+  } 
   
     function logout() {
       alert("Anda telah logout.");
@@ -218,7 +239,11 @@ oninput="filterPengguna()">
           <td>${user.noTelp}</td>
           <td>${user.email}</td>
           <td>${user.alamat}</td>
-          <td>${user.status}</td>
+            <td>
+    Rp <span id="denda-${user.npm}">${user.denda ?? 0}</span><br>
+    <button onclick="editDenda('${user.npm}')" class="action-btn">Edit</button>
+  </td>
+          <td>${user.status}</td>    
 <td>
   <button class="action-btn aktif" onclick="ubahStatus(${user.id}, 'aktif')">Aktifkan</button>
   <button class="action-btn blokir" onclick="ubahStatus(${user.id}, 'blokir')">Blokir</button>
