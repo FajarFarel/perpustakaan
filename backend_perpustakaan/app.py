@@ -34,7 +34,6 @@ def get_db_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-
 UPLOAD_FOLDER = 'uploads'
 BUKU_FOLDER = os.path.join(UPLOAD_FOLDER, 'buku')
 PROFIL_FOLDER = os.path.join(UPLOAD_FOLDER, 'profil')
@@ -59,7 +58,10 @@ def uploaded_profile(filename):
 @app.route('/uploads/buku/<filename>')
 def uploaded_buku(filename):
     return send_from_directory(BUKU_FOLDER, filename)
-    
+
+@app.route('/socket.io/<path:path>')
+def ignore_socketio(path):
+    return '', 204  # No Content, gak error
     
 @app.route('/users', methods=['GET'])
 def get_users():
@@ -401,16 +403,17 @@ def get_data_buku():
 # 🔹 update buku
 @app.route('/data_buku/<int:id>', methods=['PUT'])
 def update_data_buku(id):
+    file = None  # Pastikan file didefinisikan lebih awal
+    foto_filename = None
     conn = None
     cursor = None
+
     try:
         if request.is_json:
             data = request.get_json()
-            foto_filename = None
         else:
             data = request.form
             file = request.files.get("foto")
-            foto_filename = None
 
         required_fields = ["judul", "penulis", "no_buku", "jumlah", "deskripsi"]
         if not all(field in data and data[field] for field in required_fields):
@@ -429,7 +432,7 @@ def update_data_buku(id):
         row = cursor.fetchone()
         foto_lama = row["foto"] if row and "foto" in row else None
 
-        # Proses file baru
+        # Proses file baru jika ada
         if file and file.filename != '':
             if not allowed_file(file.filename):
                 return jsonify({"error": "Format file tidak didukung!"}), 400
@@ -499,6 +502,35 @@ def hapus_data_buku(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/buku-terpopuler', methods=['GET'])
+def buku_terpopuler_mingguan():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT db.id, db.judul, db.foto, COUNT(lp.id) AS total_pinjam
+            FROM data_buku db
+            JOIN log_peminjaman lp ON db.id = lp.id_buku
+            WHERE WEEK(lp.tanggal_pinjam) = WEEK(NOW()) 
+              AND YEAR(lp.tanggal_pinjam) = YEAR(NOW())
+            GROUP BY db.id
+            ORDER BY total_pinjam DESC
+            LIMIT 5
+        """)
+        hasil = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify(hasil), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
 # 🔹 Pinjam Buku
 @app.route('/pinjam', methods=['POST'])
 def pinjam_buku():
@@ -527,17 +559,18 @@ def pinjam_buku():
         # Kurangi stok
         cursor.execute("UPDATE data_buku SET jumlah = jumlah - 1 WHERE id = %s", (id_buku,))
 
-        # # Hapus data peminjaman lama yang statusnya sudah dikembalikan
-        # cursor.execute("""
-        #     DELETE FROM peminjaman_buku
-        #     WHERE id_buku = %s AND status = 'dikembalikan'
-        # """, (id_buku,))
-
         # Simpan peminjaman
         cursor.execute("""
             INSERT INTO peminjaman_buku (id_mahasiswa, id_buku, tanggal_pinjam, tanggal_kembali, status)
             VALUES (%s, %s, %s, %s, 'dipinjam')
         """, (id_mahasiswa, id_buku, tanggal_pinjam, tanggal_kembali))
+
+
+        # Simpan ke log_peminjaman (tambahkan bagian ini)
+        cursor.execute("""
+            INSERT INTO log_peminjaman (id_buku, tanggal_pinjam)
+            VALUES (%s, %s)
+        """, (id_buku, tanggal_pinjam))
         conn.commit()
 
         cursor.close()

@@ -28,6 +28,7 @@ dependencies:
   socket_io_client: ^3.1.1
   connectivity_plus: ^5.0.2
   network_info_plus: ^4.1.0
+  secure_application: ^4.1.0
 
 dev_dependencies:
   flutter_test:

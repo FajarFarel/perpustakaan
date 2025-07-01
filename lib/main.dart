@@ -15,6 +15,7 @@ import 'package:perpustakaan/core/colors.dart';
 import 'package:perpustakaan/core/constants.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:secure_application/secure_application.dart';
 
 Future<void> registerUserWithImage(
   BuildContext context,
@@ -573,7 +574,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextField(
                             controller: _emailController,
                             style: TextStyle(),
-                            decoration: InputDecoration(
+                            decoration: InputDecoration( 
                               labelText: 'Email',
                               labelStyle: TextStyle(),
                               border: OutlineInputBorder(
@@ -648,7 +649,13 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void main() {
-  runApp(const MyApp());
+  print("✅ SecureApplication aktif");
+  runApp(
+    SecureApplication(
+      nativeRemoveDelay: 300,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

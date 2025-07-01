@@ -150,8 +150,12 @@
     .then(response => response.json())
     .then(data => {
       if (data.user) {
-        // Jika berhasil login, redirect ke halaman admin
-        window.location.href = "dashboard.html";
+        if (data.user.role === "admin") {
+          // Redirect hanya jika role-nya admin
+          window.location.href = "dashboard.html";
+        } else {
+          alert("Akses ditolak! Hanya admin yang bisa login.");
+        }
       } else {
         alert("Login gagal: " + data.error);
       }
