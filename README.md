@@ -1,86 +1,95 @@
-📚 Perpustakaan Digital
-Aplikasi Perpustakaan Digital yang memungkinkan pengguna untuk melakukan peminjaman, pengembalian, dan manajemen buku secara online. Aplikasi ini mendukung fitur notifikasi pengembalian, autentikasi pengguna, serta manajemen admin.
 
+# 📚 Perpustakaan Digital
 
+![GitHub repo size](https://img.shields.io/github/repo-size/FajarFarel/perpustakaan)
+![GitHub stars](https://img.shields.io/github/stars/FajarFarel/perpustakaan?style=social)
+![GitHub last commit](https://img.shields.io/github/last-commit/FajarFarel/perpustakaan)
 
-🧩 Fitur Utama
+Aplikasi **Perpustakaan Digital** yang memungkinkan pengguna untuk melakukan **peminjaman, pengembalian, dan manajemen buku** secara online. Aplikasi ini dilengkapi dengan **notifikasi pengingat pengembalian**, **login mahasiswa**, dan **halaman admin**.
 
-🔐 Login & Register Mahasiswa
+---
 
-📖 Lihat Daftar Buku
+## 🧩 Fitur Utama
 
-🛒 Peminjaman & Pengembalian Buku
+- 🔐 **Login & Register Mahasiswa**
+- 📖 **Lihat Daftar Buku**
+- 🛒 **Peminjaman & Pengembalian Buku**
+- 🔔 **Notifikasi Pengingat Pengembalian Buku**
+- 📊 **Halaman Admin (Manajemen Buku & User)**
+- 🧾 **Riwayat Peminjaman**
+- 📸 **Upload Sampul Buku**
 
-🔔 Notifikasi Pengingat Pengembalian Buku
+---
 
-📊 Halaman Admin (Manajemen Buku & User)
+## 🛠️ Teknologi yang Digunakan
 
-🧾 Riwayat Peminjaman
+### 📱 Frontend (Flutter)
 
-📸 Upload Sampul Buku
+- Flutter SDK
+- [`http`](https://pub.dev/packages/http) – komunikasi API
+- [`shared_preferences`](https://pub.dev/packages/shared_preferences) – penyimpanan lokal
+- [`flutter_local_notifications`](https://pub.dev/packages/flutter_local_notifications) – notifikasi
+- [`provider`](https://pub.dev/packages/provider) & [`get`](https://pub.dev/packages/get) – manajemen state
 
+### 🌐 Backend (Flask)
 
+- REST API
+- MySQL Database
 
-🛠️ Teknologi yang Digunakan
-Frontend (Flutter)
+---
 
-Flutter SDK
+## 🗃️ Struktur Database (Contoh)
 
-http – untuk komunikasi API
-
-shared_preferences – menyimpan data lokal
-
-flutter_local_notifications – notifikasi pengingat
-
-provider & get – manajemen state
-
-Backend (Flask)
-
-REST API
-
-MySQL
-
-
-
-🗃️ Struktur Database (Contoh)
-
-Tabel Mahasiswa
-
+### 📘 Tabel Mahasiswa
+```sql
 id, nama, npm, email, password
+```
 
-Tabel Buku
-
+### 📗 Tabel Buku
+```sql
 id, judul, penulis, isbn, jumlah, foto
+```
 
-Tabel Peminjaman
-
+### 📕 Tabel Peminjaman
+```sql
 id, id_buku, id_mahasiswa, tanggal_pinjam, tanggal_kembali, status
+```
 
+---
 
+## 🚀 Cara Menjalankan Aplikasi
 
-🚀 Cara Menjalankan Aplikasi
-
-Backend
-
-cd C:\Users\(nama_device)\perpustakaan\backend_perpustakaan
+### 🔙 Backend
+```bash
+cd backend_perpustakaan
 python app.py
+```
 
-Frontend
-
+### 📲 Frontend
+```bash
 cd perpustakaan
 flutter pub get
 flutter run
+```
 
+---
 
+## 📌 Catatan Tambahan
 
-📌 Catatan
-Notifikasi pengembalian muncul 3 hari sebelum batas waktu pengembalian, 
-Buku yang telah dikembalikan tidak muncul di halaman peminjaman aktif, 
-Hanya admin yang bisa mengelola data buku dan pengguna.
+- 📆 Notifikasi pengembalian muncul **3 hari sebelum batas waktu**.
+- 📤 Buku yang sudah dikembalikan **tidak tampil** di halaman peminjaman aktif.
+- 🔒 **Hanya admin** yang dapat mengelola data buku dan pengguna.
+- 
+---
 
+## 👥 Kontributor
 
+- 👨‍💻 **Fajar** – Pengembang Utama  
+- 🤖 **Leo** – Asisten AI  
 
-✍️ Kontributor
+---
 
-Fajar – Pengembang Utama
-Leo – Asisten AI 😄
+## 📄 Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE) – silakan gunakan dan kembangkan! 🚀
+      
