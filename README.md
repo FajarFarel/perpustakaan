@@ -91,5 +91,5 @@ flutter run
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah [MIT License](LICENSE) – silakan gunakan dan kembangkan! 🚀
+Proyek ini dilisensikan di bawah [MIT License](License) – silakan gunakan dan kembangkan! 🚀
       
