@@ -1,5 +1,5 @@
 DB_HOST = "localhost"
-DB_USER = "root"
+DB_USER = "fajar"
 DB_PASSWORD = "Nova_0920"
 DB_NAME = "perpustakaan"
 # Base_URL = "http://10.0.2.228:5000/"
