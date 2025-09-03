@@ -38,7 +38,7 @@ Aplikasi **Perpustakaan Digital** yang memungkinkan pengguna untuk melakukan **p
 
 ---
 
-## 🗃️ Struktur Database (Contoh)
+## 🗃️ Struktur Database
 
 ### 📘 Tabel Mahasiswa
 ```sql
