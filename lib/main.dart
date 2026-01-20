@@ -48,7 +48,7 @@ Future<void> registerUserWithImage(
     var responseData = jsonDecode(responseBody);
 
     if (response.statusCode == 201) {
-      print("✅ Register Berhasil!");
+      print("✅ Register Berhasil!"); 
       print("User Data: $responseData");
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -426,37 +426,37 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  String? _currentSSID;
-  bool _isWifiBenar = false;
+  // String? _currentSSID;
+  // bool _isWifiBenar = false;
 
   @override
   void initState() {
     super.initState();
-    _cekKoneksiWifi();
-    Connectivity().onConnectivityChanged.listen((result) {
-      _cekKoneksiWifi();
-    });
+    // _cekKoneksiWifi();
+    // Connectivity().onConnectivityChanged.listen((result) {
+    //   _cekKoneksiWifi();
+    // });
   }
 
-  Future<void> _cekKoneksiWifi() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    final info = NetworkInfo();
+  // Future<void> _cekKoneksiWifi() async {
+  //   final connectivityResult = await Connectivity().checkConnectivity();
+  //   final info = NetworkInfo();
 
-    if (connectivityResult == ConnectivityResult.wifi) {
-      String? ssid = await info.getWifiName();
-      ssid = ssid?.replaceAll('"', '');
+  //   if (connectivityResult == ConnectivityResult.wifi) {
+  //     String? ssid = await info.getWifiName();
+  //     ssid = ssid?.replaceAll('"', '');
 
-      setState(() {
-        _currentSSID = ssid;
-        _isWifiBenar = ssid == "$wifi";
-      });
-    } else {
-      setState(() {
-        _currentSSID = null;
-        _isWifiBenar = false;
-      });
-    }
-  }
+  //     setState(() {
+  //       _currentSSID = ssid;
+  //       _isWifiBenar = ssid == "$wifi";
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _currentSSID = null;
+  //       _isWifiBenar = false;
+  //     });
+  //   }
+  // }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -478,45 +478,78 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _validateAndLogin() async {
-    print("🔄 Tombol Login Ditekan!");
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+  // void _validateAndLogin() async {
+  //   print("🔄 Tombol Login Ditekan!");
+  //   final email = _emailController.text.trim();
+  //   final password = _passwordController.text.trim();
 
-    if (!email.endsWith('@gmail.com')) {
-      _showErrorDialog('Email harus berakhiran @gmail.com');
-      return;
-    }
-    if (!RegExp(r'^\d{1,8}$').hasMatch(password)) {
-      _showErrorDialog('Password harus terdiri dari 1-8 digit angka');
-      return;
-    }
+  //   if (!email.endsWith('@gmail.com')) {
+  //     _showErrorDialog('Email harus berakhiran @gmail.com');
+  //     return;
+  //   }
+  //   if (!RegExp(r'^\d{1,8}$').hasMatch(password)) {
+  //     _showErrorDialog('Password harus terdiri dari 1-8 digit angka');
+  //     return;
+  //   }
 
-    final connectivity = await Connectivity().checkConnectivity();
-    final info = NetworkInfo();
+  //   final connectivity = await Connectivity().checkConnectivity();
+  //   final info = NetworkInfo();
 
-    if (connectivity == ConnectivityResult.wifi) {
-      String? ssid = await info.getWifiName();
-      ssid = ssid?.replaceAll('"', '');
+  //   if (connectivity == ConnectivityResult.wifi) {
+  //     String? ssid = await info.getWifiName();
+  //     ssid = ssid?.replaceAll('"', '');
 
-      if (ssid == "$wifi") {
-        print("📶 Terhubung ke Wi-Fi yang diizinkan: $ssid");
-        AuthController().loginUser(context, email, password);
-      } else {
-        print("🚫 Terhubung ke Wi-Fi lain: $ssid");
-        _showErrorDialog(
-            'Silakan hubungkan perangkat ke Wi-Fi "$wifi" untuk melanjutkan login.');
-      }
-    } else {
-      print("❌ Tidak terhubung ke Wi-Fi mana pun");
-      _showErrorDialog(
-          'Kamu tidak tersambung ke jaringan Wi-Fi mana pun. Silakan hubungkan ke Wi-Fi "$wifi".');
-    }
+  //     if (ssid == "$wifi") {
+  //       print("📶 Terhubung ke Wi-Fi yang diizinkan: $ssid");
+  //       AuthController().loginUser(context, email, password);
+  //     } else {
+  //       print("🚫 Terhubung ke Wi-Fi lain: $ssid");
+  //       _showErrorDialog(
+  //           'Silakan hubungkan perangkat ke Wi-Fi "$wifi" untuk melanjutkan login.');
+  //     }
+  //   } else {
+  //     print("❌ Tidak terhubung ke Wi-Fi mana pun");
+  //     _showErrorDialog(
+  //         'Kamu tidak tersambung ke jaringan Wi-Fi mana pun. Silakan hubungkan ke Wi-Fi "$wifi".');
+  //   }
+  // }
+
+void _validateAndLogin() {
+  print("🚀 Tombol Login ditekan");
+
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
+
+  // ✅ Validasi email
+  if (email.isEmpty) {
+    _showErrorDialog('Email tidak boleh kosong');
+    return;
   }
+
+  if (!email.endsWith('@gmail.com')) {
+    _showErrorDialog('Email harus berakhiran @gmail.com');
+    return;
+  }
+
+  // ✅ Validasi password
+  if (password.isEmpty) {
+    _showErrorDialog('Password tidak boleh kosong');
+    return;
+  }
+
+  if (!RegExp(r'^\d{1,8}$').hasMatch(password)) {
+    _showErrorDialog('Password harus 1–8 digit angka');
+    return;
+  }
+
+  // 🔥 INI KUNCI NYA (tanpa ini gak bakal pindah halaman)
+  print("✅ Validasi lolos, lanjut login");
+  AuthController().loginUser(context, email, password);
+}
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("📡 Wifi Benar: $_isWifiBenar | SSID: $_currentSSID");
+    // debugPrint("📡 Wifi Benar: $_isWifiBenar | SSID: $_currentSSID");
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(

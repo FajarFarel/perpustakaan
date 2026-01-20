@@ -109,7 +109,7 @@ def register():
         os.makedirs(profil_folder, exist_ok=True)
 
         # Simpan file foto dengan nama unik
-        filename = secure_filename(file.filename)
+        filename = secure_filename(file.filename)       
         import time
         unique_filename = f"{int(time.time())}_{filename}"
         save_path = os.path.join(profil_folder, unique_filename)
@@ -120,7 +120,7 @@ def register():
 
         conn = get_db_connection()
         cursor = conn.cursor()
-
+        
         # Cek duplikat email / npm
         cursor.execute("SELECT * FROM mahasiswa WHERE email = %s OR npm = %s", (data["email"], data["npm"]))
         if cursor.fetchone():
