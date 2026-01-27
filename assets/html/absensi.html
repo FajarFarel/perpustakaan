@@ -230,19 +230,25 @@
 </div>
 
 <script>
-  function bukaPopupQR() {
-    document.getElementById('popupQR').style.display = 'flex';
-    const input = document.getElementById('inputNPM');
-    input.value = '';  // Clear jika ada input sebelumnya
-    input.focus();
+ function bukaPopupQR() {
+  const modal = document.getElementById('popupQR');
+  const input = document.getElementById('inputNPM');
+  
+  modal.style.display = 'flex';
+  input.value = '';  // Hapus input sebelumnya
+  input.focus();
 
-    // ✅ Pastikan listener hanya dipasang sekali per buka popup
-    input.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        prosesNPM();
-      }
-    }, { once: true });
+  // ❗️Hapus event listener sebelumnya (jika ada)
+  input.removeEventListener('keydown', handleEnterKey);
+  input.addEventListener('keydown', handleEnterKey);
+}
+
+// Fungsi terpisah agar bisa dihapus & ditambahkan ulang
+function handleEnterKey(e) {
+  if (e.key === 'Enter') {
+    prosesNPM();
   }
+}
 
   async function prosesNPM() {
     const npm = document.getElementById('inputNPM').value.trim();

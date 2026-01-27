@@ -1,4 +1,4 @@
-
+      
 # 📚 Perpustakaan Digital
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/FajarFarel/perpustakaan)
@@ -38,7 +38,7 @@ Aplikasi **Perpustakaan Digital** yang memungkinkan pengguna untuk melakukan **p
 
 ---
 
-## 🗃️ Struktur Database (Contoh)
+## 🗃️ Struktur Database
 
 ### 📘 Tabel Mahasiswa
 ```sql
